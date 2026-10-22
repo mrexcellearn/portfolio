@@ -1,0 +1,29 @@
+---
+import { site } from '../../config/site.config';
+---
+<div class="avail small">
+  {site.availability.open && (
+    <span class="status"><span class="dot" aria-hidden="true"></span>{site.availability.text}</span>
+  )}
+  <span class="time muted" data-jkt-time data-tz={site.timeZone}>{site.location}</span>
+</div>
+<script>
+  const els = document.querySelectorAll<HTMLElement>('[data-jkt-time]');
+  const tick = () => {
+    els.forEach((el) => {
+      const fmt = new Intl.DateTimeFormat('en-GB', {
+        timeZone: el.dataset.tz, hour: '2-digit', minute: '2-digit', hour12: false,
+      });
+      el.textContent = `Jakarta ${fmt.format(new Date())}`;
+    });
+  };
+  tick();
+  const now = new Date();
+  setTimeout(() => { tick(); setInterval(tick, 60_000); }, (60 - now.getSeconds()) * 1000);
+</script>
+<style>
+  .avail { display: flex; align-items: center; gap: 16px; white-space: nowrap; }
+  .status { display: inline-flex; align-items: center; gap: 8px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ok) 20%, transparent); }
+  .time { font-variant-numeric: tabular-nums; }
+</style>

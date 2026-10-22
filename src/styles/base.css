@@ -30,3 +30,5 @@ img { max-width: 100%; height: auto; display: block; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
+.js-reveal .reveal { opacity: 0; transform: translateY(8px); transition: opacity 250ms ease, transform 250ms ease; }
+.js-reveal .reveal.in { opacity: 1; transform: none; }

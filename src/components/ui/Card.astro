@@ -1,0 +1,15 @@
+---
+interface Props { href?: string; class?: string; }
+const { href, class: cls } = Astro.props;
+const Tag = href ? 'a' : 'div';
+---
+<Tag class:list={['card', cls, { linked: !!href }]} href={href}><slot /></Tag>
+<style>
+  .card {
+    display: flex; flex-direction: column; gap: 12px;
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 24px; text-decoration: none; color: inherit;
+    transition: border-color 150ms ease, transform 150ms ease;
+  }
+  .linked:hover { border-color: var(--ink); transform: translateY(-1px); }
+</style>

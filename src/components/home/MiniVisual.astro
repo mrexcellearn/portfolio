@@ -1,0 +1,52 @@
+---
+// Small component-built strips for "How I can help". Decorative; the row text carries the meaning.
+interface Props { kind: 'flow' | 'sheet' | 'doc'; }
+const { kind } = Astro.props;
+---
+<div class:list={['mini', `mini-${kind}`]} aria-hidden="true">
+  {kind === 'flow' && (
+    <div class="flow">
+      <span class="node">Request</span><span class="link"></span>
+      <span class="node diamond">Docs ok?</span><span class="link"></span>
+      <span class="node">AP verify</span><span class="link"></span>
+      <span class="node ok">Treasury</span>
+    </div>
+  )}
+  {kind === 'sheet' && (
+    <table class="sheet">
+      <tr><th></th><th>A</th><th>B</th><th>C</th></tr>
+      <tr><th>1</th><td>Metric</td><td>Jun</td><td>Jul</td></tr>
+      <tr><th>2</th><td>DSO</td><td class="n">48</td><td class="n up">44</td></tr>
+      <tr><th>3</th><td>DPO</td><td class="n">62</td><td class="n down">55</td></tr>
+    </table>
+  )}
+  {kind === 'doc' && (
+    <div class="doc">
+      <span class="h"></span>
+      <span class="row"><b>1</b><span class="l w80"></span></span>
+      <span class="row"><b>2</b><span class="l w60"></span></span>
+      <span class="row"><b>3</b><span class="l w70"></span></span>
+    </div>
+  )}
+</div>
+<style>
+  .mini { background: var(--band); border-radius: var(--radius-sm); padding: 16px; overflow: hidden; font-size: 0.75rem; }
+  .flow { display: flex; align-items: center; gap: 0; flex-wrap: nowrap; }
+  @media (max-width: 480px) { .flow { flex-wrap: wrap; row-gap: 8px; } .link { flex-basis: 8px; } }
+  .node { background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; white-space: nowrap; }
+  .node.diamond { border-style: dashed; }
+  .node.ok { border-color: var(--ok); color: var(--ok); }
+  .link { flex: 1 0 12px; height: 1px; background: var(--ink); opacity: 0.5; }
+  .sheet { border-collapse: collapse; background: var(--bg); width: 100%; font-variant-numeric: tabular-nums; }
+  .sheet th, .sheet td { border: 1px solid var(--line); padding: 3px 8px; text-align: left; }
+  .sheet th { background: var(--band); color: var(--muted); font-weight: 400; width: 24px; }
+  .sheet .n { text-align: right; }
+  .sheet .up { color: var(--ok); }
+  .sheet .down { color: var(--bad); }
+  .doc { display: grid; gap: 8px; background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 12px; }
+  .doc .h { height: 8px; width: 40%; background: var(--ink); border-radius: 2px; }
+  .doc .row { display: flex; gap: 8px; align-items: center; }
+  .doc b { font-weight: 500; color: var(--muted); }
+  .doc .l { height: 6px; background: var(--line); border-radius: 2px; }
+  .w80 { width: 80%; } .w60 { width: 60%; } .w70 { width: 70%; }
+</style>

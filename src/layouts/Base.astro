@@ -4,12 +4,15 @@ import '@fontsource/jetbrains-mono/400.css';
 import '../styles/tokens.css';
 import '../styles/base.css';
 import { site } from '../config/site.config';
+import Nav from '../components/layout/Nav.astro';
+import Footer from '../components/layout/Footer.astro';
 
 interface Props {
   title?: string;
   description?: string;
+  jsonLd?: Record<string, unknown>;
 }
-const { title, description = site.description } = Astro.props;
+const { title, description = site.description, jsonLd } = Astro.props;
 const pageTitle = title ? `${title} | ${site.shortName} Karundeng` : site.title;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 ---
@@ -26,12 +29,29 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary_large_image" />
+    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
     <slot name="head" />
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
+    <Nav />
     <main id="main">
       <slot />
     </main>
+    <Footer />
+    <script>
+      // Fade-up on scroll. Content stays visible without JS and with reduced motion.
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!reduce && 'IntersectionObserver' in window) {
+        document.documentElement.classList.add('js-reveal');
+        const io = new IntersectionObserver((entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+          });
+        }, { rootMargin: '0px 0px -10% 0px' });
+        document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+      }
+    </script>
   </body>
 </html>

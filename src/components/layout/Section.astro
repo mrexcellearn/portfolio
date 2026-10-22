@@ -1,0 +1,20 @@
+---
+interface Props { id?: string; band?: boolean; title?: string; eyebrow?: string; }
+const { id, band = false, title, eyebrow } = Astro.props;
+---
+<section id={id} class:list={['section', { band }]} aria-labelledby={title && id ? `${id}-title` : undefined}>
+  <div class="container reveal">
+    {eyebrow && <p class="eyebrow small muted">{eyebrow}</p>}
+    {title && <h2 id={id ? `${id}-title` : undefined}>{title}</h2>}
+    <slot />
+  </div>
+</section>
+<style>
+  .section { padding-block: 96px; }
+  .section + .section:not(.band) { border-top: 1px solid var(--line); }
+  .band { background: var(--band); }
+  .band + .section { border-top: 0; }
+  .eyebrow { text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+  h2 { margin-bottom: 40px; }
+  @media (max-width: 720px) { .section { padding-block: 64px; } }
+</style>
