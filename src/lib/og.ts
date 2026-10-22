@@ -4,7 +4,7 @@ import { Resvg } from '@resvg/resvg-js';
 
 const font = (w: number) => readFileSync(`node_modules/@fontsource/inter/files/inter-latin-${w}-normal.woff`);
 const fonts = [
-  { name: 'Inter', data: font(300), weight: 300 as const, style: 'normal' as const },
+  { name: 'Inter', data: font(600), weight: 600 as const, style: 'normal' as const },
   { name: 'Inter', data: font(500), weight: 500 as const, style: 'normal' as const },
 ];
 
@@ -19,7 +19,7 @@ export async function ogImage(title: string, eyebrow: string): Promise<Buffer> {
         h('div', { width: 64, height: 64, borderRadius: 16, background: '#111111', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24, fontWeight: 500 }, 'RK'),
         h('div', { fontSize: 26, color: '#6B6F6A', fontWeight: 500 }, eyebrow),
       ]),
-      h('div', { fontSize: title.length > 60 ? 56 : 68, fontWeight: 300, letterSpacing: '-0.02em', lineHeight: 1.1, maxWidth: 1000 }, title),
+      h('div', { fontSize: title.length > 60 ? 56 : 68, fontWeight: 600, letterSpacing: '-0.03em', lineHeight: 1.1, maxWidth: 1000 }, title),
       h('div', { display: 'flex', justifyContent: 'space-between', fontSize: 24, color: '#6B6F6A', borderTop: '1px solid #E3E5DF', paddingTop: 24 }, [
         h('div', {}, 'Rey Karundeng'),
         h('div', {}, 'AP & Treasury · Finance automation'),

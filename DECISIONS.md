@@ -34,3 +34,4 @@ Choices made where the PRD was silent or where something had to change. Newest l
 | 28 | M5 | Shiki theme `github-light-high-contrast` | The default `github-light` orange fails AA contrast. |
 | 29 | M5 | About page story is placeholder copy in Rey's voice, marked `[PLACEHOLDER]` in the source | Rey replaces it with his own words. |
 | 30 | M5 | Analytics flag exists in `site.config.ts` (`analytics.enabled: false`) but no analytics code ships | PRD: off by default; nothing to load until a provider is chosen. |
+| 31 | Post-launch | Headings switched from weight 300 to 600 (`--fw-heading`), tighter tracking; home greeting is "Hi, I'm Reynaldi." | Rey picked option B from the font previews: a heavier, more corporate look. Overrides PRD 7.1/7.2 "weight 300". |
