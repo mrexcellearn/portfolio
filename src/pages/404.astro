@@ -1,0 +1,20 @@
+---
+import Base from '../layouts/Base.astro';
+import Button from '../components/ui/Button.astro';
+import { url } from '../lib/url';
+---
+<Base title="Page not found" description="This page doesn't exist." og="home">
+  <section class="container page">
+    <p class="small muted">404</p>
+    <h1>This page doesn't exist.</h1>
+    <p class="muted">The link may be old, or the page may have moved.</p>
+    <div class="actions">
+      <Button href={url('/')}>Go home</Button>
+      <Button href={url('/case-studies')} variant="secondary">See case studies</Button>
+    </div>
+  </section>
+</Base>
+<style>
+  .page { padding-block: 120px; }
+  .actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 32px; }
+</style>

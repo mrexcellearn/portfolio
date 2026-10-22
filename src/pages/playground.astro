@@ -1,0 +1,39 @@
+---
+import Base from '../layouts/Base.astro';
+import Card from '../components/ui/Card.astro';
+import Chip from '../components/ui/Chip.astro';
+import Icon from '../components/ui/Icon.astro';
+import { tools } from '../data/playground';
+
+const isUrl = (s: string) => /^https?:\/\//.test(s);
+---
+<Base title="Playground" description="Small tools I build for myself and share: browser PDF tools, a chat viewer, Apps Script mail merge and more.">
+  <section class="container page">
+    <h1>Playground</h1>
+    <p class="muted lead">Small tools I build for myself and share.</p>
+    <ul class="grid">
+      {tools.map((t) => (
+        <li>
+          <Card href={isUrl(t.href) ? t.href : undefined}>
+            <div class="meta"><Chip tone={t.status === 'Live' ? 'ok' : 'warn'}>{t.status}</Chip></div>
+            <h2 class="name">{t.name}</h2>
+            <p class="muted">{t.line}</p>
+            <div class="chips">{t.tech.map((x) => <Chip>{x}</Chip>)}</div>
+            {isUrl(t.href) && <span class="open small">Open tool <Icon name="arrow-up-right" size={16} /></span>}
+          </Card>
+        </li>
+      ))}
+    </ul>
+  </section>
+</Base>
+<style>
+  .page { padding-block: 64px 96px; }
+  .lead { font-size: 1.125rem; margin-bottom: 48px; }
+  .grid { list-style: none; margin: 0; padding: 0; display: grid; gap: 24px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); }
+  .grid li { display: flex; }
+  .grid li > :global(*) { flex: 1; }
+  .name { font-size: var(--fs-h3); font-weight: 500; margin: 0; }
+  p { margin: 0; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .open { display: inline-flex; align-items: center; gap: 6px; margin-top: auto; }
+</style>

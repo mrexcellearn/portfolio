@@ -21,7 +21,7 @@ const hl = new Set(highlight);
     <button type="button" class="copy" data-copy>Copy</button>
   </div>
   <div class:list={['code', { hasHl: hl.size > 0 }]} data-hl={[...hl].join(',')}>
-    <Code code={src} lang={shikiLang} theme="github-light" />
+    <Code code={src} lang={shikiLang} theme="github-light-high-contrast" />
   </div>
   <textarea hidden data-src>{src}</textarea>
 </figure>

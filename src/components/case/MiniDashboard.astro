@@ -93,12 +93,12 @@ const arrow = { up: '↑', down: '↓', flat: '→' } as const;
   .explain { margin: 16px 0 0; }
   .by-move { display: none; }
   /* benefit mode (default) */
-  .tile[data-benefit='good'] { --c: var(--ok); }
+  .tile[data-benefit='good'] { --c: var(--ok-text); }
   .tile[data-benefit='bad'] { --c: var(--bad); }
   /* movement mode: the original mistake */
   .dash:has(input[value='movement']:checked) .tile { --c: var(--muted); }
   .dash:has(input[value='movement']:checked) .tile[data-move='up'] { --c: var(--bad); }
-  .dash:has(input[value='movement']:checked) .tile[data-move='down'] { --c: var(--ok); }
+  .dash:has(input[value='movement']:checked) .tile[data-move='down'] { --c: var(--ok-text); }
   .dash:has(input[value='movement']:checked) .by-move { display: inline; }
   .dash:has(input[value='movement']:checked) .by-benefit { display: none; }
 </style>
