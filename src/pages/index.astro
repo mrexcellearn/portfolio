@@ -1,9 +1,233 @@
 ---
+import { existsSync } from 'node:fs';
+import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
+import Section from '../components/layout/Section.astro';
+import Button from '../components/ui/Button.astro';
+import Chip from '../components/ui/Chip.astro';
+import Card from '../components/ui/Card.astro';
+import Icon from '../components/ui/Icon.astro';
+import MiniVisual from '../components/home/MiniVisual.astro';
+import { site } from '../config/site.config';
+import { url } from '../lib/url';
+import { experience } from '../data/experience';
+import { proof } from '../data/proof';
+import { services } from '../data/services';
+import { tools } from '../data/playground';
+import { testimonials } from '../data/testimonials';
+
+const cases = (await getCollection('caseStudies', ({ data }) => data.status === 'published'))
+  .sort((a, b) => a.data.order - b.data.order)
+  .slice(0, 4);
+
+const avatar = `${import.meta.env.BASE_URL}rey.jpg`;
+const hasAvatar = existsSync('public/rey.jpg');
+const mailto = `mailto:${site.email}`;
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: site.name,
+  jobTitle: 'Finance Supervisor, AP & Treasury',
+  address: { '@type': 'PostalAddress', addressLocality: 'Jakarta', addressCountry: 'ID' },
+  email: site.email,
+  url: new URL(import.meta.env.BASE_URL, Astro.site).href,
+  knowsAbout: ['Accounts payable', 'Treasury', 'Working capital', 'Power Platform', 'Excel', 'Google Apps Script'],
+};
 ---
-<Base>
-  <section class="container" style="padding-block: 96px;">
-    <h1>Hi, I'm Rey.</h1>
-    <p class="muted">Site under construction.</p>
+<Base jsonLd={jsonLd}>
+  <section class="hero container">
+    <div class="hello reveal">
+      <div class="avatar" aria-hidden="true">
+        {hasAvatar ? <img src={avatar} alt="" width="56" height="56" /> : <span>{site.initials}</span>}
+      </div>
+      <h1>Hi, I'm Rey.</h1>
+    </div>
+    <div class="pitch reveal">
+      <p class="headline">Finance operations lead who builds the automation behind AP &amp; Treasury.</p>
+      <p class="muted sub">AP &amp; Treasury Supervisor based in Jakarta, Indonesia. I design and ship Power Platform, Excel and Apps Script solutions that replace manual finance work.</p>
+      <div class="actions">
+        <Button href={url('/case-studies')}>See case studies</Button>
+        <Button href={mailto} variant="secondary">Talk with me</Button>
+      </div>
+    </div>
   </section>
+
+  <Section id="proof" band>
+    <div class="two-col">
+      <div>
+        <h2 class="col-title">Experience</h2>
+        <ul class="rows">
+          {experience.map((r) => (
+            <li class="row">
+              <Icon name="briefcase" />
+              <div class="row-body"><span>{r.title}</span><span class="small muted">{r.org}</span></div>
+              <span class="small muted date">{r.dates}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div>
+        <h2 class="col-title">Proof</h2>
+        <ul class="rows">
+          {proof.map((r) => {
+            const inner = (
+              <>
+                <Icon name={r.icon} />
+                <div class="row-body"><span>{r.title}</span><span class="small muted">{r.detail}</span></div>
+                {r.href && cases.length ? <span class="arrow"><Icon name="arrow-up-right" size={16} /></span> : <span />}
+              </>
+            );
+            return <li class="row">{r.href && cases.length ? <a class="row-link" href={url(r.href)}>{inner}</a> : inner}</li>;
+          })}
+        </ul>
+      </div>
+    </div>
+  </Section>
+
+  <Section id="help" title="How I can help">
+    <div class="services">
+      {services.map((s, i) => (
+        <details class="service" open={i === 0}>
+          <summary>
+            <span class="num small muted">0{i + 1}</span>
+            <span class="svc-title">{s.title}</span>
+            <span class="toggle" aria-hidden="true"><Icon name="plus" size={18} /></span>
+          </summary>
+          <div class="svc-body">
+            <div>
+              <p>{s.body}</p>
+              <div class="chips">{s.tools.map((t) => <Chip>{t}</Chip>)}</div>
+            </div>
+            <MiniVisual kind={s.visual} />
+          </div>
+        </details>
+      ))}
+    </div>
+  </Section>
+
+  {cases.length > 0 && (
+    <Section id="work" title="Selected work" band>
+      <div class:list={['work', `n${cases.length}`]}>
+        {cases.map((c) => (
+          <Card href={url(`/case-studies/${c.id.replace(/\/index$/, '')}`)} class="work-card">
+            <div class="meta small muted"><Chip>{c.data.category}</Chip><span>{c.data.date}</span></div>
+            <h3>{c.data.title}</h3>
+            <p class="muted">{c.data.summary}</p>
+            <span class="view small">View case study <Icon name="arrow" size={16} /></span>
+          </Card>
+        ))}
+      </div>
+    </Section>
+  )}
+
+  <Section id="playground" title="Playground">
+    <p class="muted lead">Small tools I build for myself and share.</p>
+    <div class="tools">
+      {tools.slice(0, 3).map((t) => (
+        <Card>
+          <div class="meta small"><Chip tone={t.status === 'Live' ? 'ok' : 'warn'}>{t.status}</Chip></div>
+          <h3>{t.name}</h3>
+          <p class="muted">{t.line}</p>
+          <div class="chips">{t.tech.map((x) => <Chip>{x}</Chip>)}</div>
+        </Card>
+      ))}
+    </div>
+    <p class="see-all"><a href={url('/playground')}>See all tools <Icon name="arrow" size={16} /></a></p>
+  </Section>
+
+  {testimonials.length > 0 && (
+    <Section id="testimonials" title="What people say" band>
+      <div class="tools">
+        {testimonials.map((t) => (
+          <figure class="quote">
+            <blockquote>{t.quote}</blockquote>
+            <figcaption class="small muted">{t.name}, {t.role}</figcaption>
+          </figure>
+        ))}
+      </div>
+    </Section>
+  )}
+
+  <Section id="cta">
+    <div class="cta">
+      <p class="cta-text">Still running a process on email and Excel? Let's talk.</p>
+      <Button href={mailto}>Talk with me</Button>
+    </div>
+  </Section>
 </Base>
+
+<style>
+  .hero {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: end;
+    padding-block: 120px 96px;
+  }
+  .hello { display: flex; flex-direction: column; gap: 24px; }
+  .hello h1 { margin: 0; }
+  .avatar {
+    width: 56px; height: 56px; border-radius: 50%; overflow: hidden; background: var(--band);
+    border: 1px solid var(--line); display: grid; place-items: center; font-weight: 500; font-size: 0.875rem;
+  }
+  .headline { font-size: var(--fs-h2); line-height: 1.3; font-weight: 400; margin-bottom: 16px; }
+  .sub { max-width: 52ch; }
+  .actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 32px; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; }
+  .col-title { font-size: var(--fs-h3); font-weight: 500; margin-bottom: 16px; }
+  .rows { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+  .row { border-bottom: 1px solid var(--line); }
+  .row, .row-link { display: grid; grid-template-columns: 20px 1fr auto; gap: 16px; align-items: center; padding: 16px 0; }
+  .row:has(.row-link) { padding: 0; display: block; }
+  .row-link { text-decoration: none; color: inherit; }
+  .row-link:hover .arrow { transform: translate(2px, -2px); color: var(--ink); }
+  .row-body { display: flex; flex-direction: column; }
+  .arrow { color: var(--muted); transition: transform 150ms ease; }
+  .date { text-align: right; }
+
+  .services { border-top: 1px solid var(--line); }
+  .service { border-bottom: 1px solid var(--line); }
+  summary {
+    display: grid; grid-template-columns: 40px 1fr 24px; gap: 16px; align-items: center;
+    padding: 24px 0; cursor: pointer; list-style: none; font-size: 1.25rem; font-weight: 400;
+  }
+  summary::-webkit-details-marker { display: none; }
+  .toggle { transition: transform 150ms ease; }
+  details[open] .toggle { transform: rotate(45deg); }
+  .svc-body { display: grid; grid-template-columns: 1.2fr 1fr; gap: 40px; padding: 0 0 32px 56px; align-items: start; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+
+  .work { display: grid; gap: 24px; grid-template-columns: repeat(2, 1fr); }
+  .work.n1 { grid-template-columns: 1fr; max-width: 640px; }
+  .work.n3 > :global(:first-child) { grid-column: span 2; }
+  .meta { display: flex; align-items: center; gap: 12px; }
+  .work :global(.work-card) h3 { font-size: 1.375rem; font-weight: 400; margin: 8px 0 0; }
+  .view { display: inline-flex; gap: 6px; align-items: center; margin-top: auto; opacity: 0; transition: opacity 150ms ease; }
+  .work :global(.work-card:hover) .view, .work :global(.work-card:focus-visible) .view { opacity: 1; }
+  @media (hover: none) { .view { opacity: 1; } }
+
+  .lead { margin-top: -24px; margin-bottom: 32px; }
+  .tools { display: grid; gap: 24px; grid-template-columns: repeat(3, 1fr); }
+  .tools h3 { margin: 0; }
+  .tools p { margin: 0; }
+  .see-all { margin: 32px 0 0; }
+  .see-all a { display: inline-flex; gap: 6px; align-items: center; text-underline-offset: 4px; }
+  .quote { margin: 0; border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; background: var(--bg); }
+  .quote blockquote { margin: 0 0 16px; }
+
+  .cta { display: flex; justify-content: space-between; align-items: center; gap: 32px; flex-wrap: wrap; }
+  .cta-text { font-size: var(--fs-h2); font-weight: 300; margin: 0; max-width: 24ch; line-height: 1.25; }
+
+  @media (max-width: 899px) {
+    .hero { grid-template-columns: 1fr; padding-block: 64px; gap: 32px; }
+    .two-col { grid-template-columns: 1fr; gap: 48px; }
+    .svc-body { grid-template-columns: 1fr; padding-left: 0; gap: 24px; }
+    .tools { grid-template-columns: 1fr; }
+    .work { grid-template-columns: 1fr; }
+    .work.n3 > :global(:first-child) { grid-column: auto; }
+  }
+  @media (max-width: 600px) {
+    .row { grid-template-columns: 20px 1fr; }
+    .date { grid-column: 2; text-align: left; margin-top: -12px; }
+  }
+  @media (max-width: 720px) { summary { font-size: 1.0625rem; grid-template-columns: 32px 1fr 24px; } }
+</style>

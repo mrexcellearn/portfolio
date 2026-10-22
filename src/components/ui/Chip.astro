@@ -1,0 +1,17 @@
+---
+interface Props { tone?: 'neutral' | 'ok' | 'warn' | 'bad'; mono?: boolean; }
+const { tone = 'neutral', mono = false } = Astro.props;
+---
+<span class:list={['chip', `chip-${tone}`, { mono }]}><slot /></span>
+<style>
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: var(--fs-small); line-height: 1; padding: 6px 10px;
+    border: 1px solid var(--line); border-radius: 999px; color: var(--ink);
+    background: var(--bg); white-space: nowrap;
+  }
+  .mono { font-family: var(--font-mono); border-radius: 6px; }
+  .chip-ok { color: var(--ok); border-color: color-mix(in srgb, var(--ok) 40%, var(--line)); }
+  .chip-warn { color: var(--warn); border-color: color-mix(in srgb, var(--warn) 40%, var(--line)); }
+  .chip-bad { color: var(--bad); border-color: color-mix(in srgb, var(--bad) 40%, var(--line)); }
+</style>

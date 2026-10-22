@@ -1,0 +1,85 @@
+---
+import { site } from '../../config/site.config';
+import { url } from '../../lib/url';
+import AvailabilityChip from './AvailabilityChip.astro';
+import Icon from '../ui/Icon.astro';
+
+const links = [
+  { href: url('/case-studies'), label: 'Case studies' },
+  { href: url('/playground'), label: 'Playground' },
+  { href: url('/about'), label: 'About' },
+  { href: url('/contact'), label: 'Contact' },
+];
+const current = Astro.url.pathname.replace(/\/$/, '');
+---
+<header class="nav" data-nav>
+  <div class="container inner">
+    <a class="logo" href={url('/')} aria-label={`${site.name}, home`}>{site.initials}</a>
+    <nav aria-label="Main">
+      <button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav-links" data-menu-btn>
+        <span class="sr-only">Menu</span>
+        <span class="i-open"><Icon name="menu" /></span>
+        <span class="i-close"><Icon name="x" /></span>
+      </button>
+      <ul id="nav-links" class="links">
+        {links.map((l) => (
+          <li><a href={l.href} aria-current={current.startsWith(l.href.replace(/\/$/, '')) ? 'page' : undefined}>{l.label}</a></li>
+        ))}
+      </ul>
+    </nav>
+    <div class="right"><AvailabilityChip /></div>
+  </div>
+</header>
+<script>
+  const nav = document.querySelector<HTMLElement>('[data-nav]');
+  const btn = document.querySelector<HTMLButtonElement>('[data-menu-btn]');
+  const onScroll = () => nav?.classList.toggle('scrolled', window.scrollY > 8);
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+  btn?.addEventListener('click', () => {
+    const open = btn.getAttribute('aria-expanded') !== 'true';
+    btn.setAttribute('aria-expanded', String(open));
+    nav?.classList.toggle('open', open);
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && nav?.classList.contains('open')) {
+      nav.classList.remove('open');
+      btn?.setAttribute('aria-expanded', 'false');
+      btn?.focus();
+    }
+  });
+</script>
+<style>
+  .nav { position: sticky; top: 0; z-index: 50; background: var(--bg); border-bottom: 1px solid transparent; transition: border-color 150ms ease, background 150ms ease; }
+  .nav.scrolled { background: color-mix(in srgb, var(--bg) 82%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom-color: var(--line); }
+  .inner { display: flex; align-items: center; gap: 32px; min-height: 72px; }
+  .logo {
+    display: grid; place-items: center; width: 40px; height: 40px; border-radius: 10px;
+    background: var(--ink); color: #fff; font-weight: 600; font-size: 0.875rem; text-decoration: none; letter-spacing: 0.02em;
+  }
+  nav { flex: 1; }
+  .links { display: flex; gap: 28px; list-style: none; margin: 0; padding: 0; }
+  .links a { text-decoration: none; font-size: 0.9375rem; color: var(--muted); padding: 8px 0; }
+  .links a:hover, .links a[aria-current='page'] { color: var(--ink); }
+  .menu-btn { display: none; }
+  @media (max-width: 1000px) { .right :global(.time) { display: none; } }
+  @media (max-width: 720px) {
+    .inner { gap: 16px; }
+    nav { order: 3; flex: 0; }
+    .right { flex: 1; display: flex; justify-content: flex-end; }
+    .menu-btn {
+      display: grid; place-items: center; width: 44px; height: 44px; border: 1px solid var(--line);
+      border-radius: var(--radius-sm); background: var(--bg); color: var(--ink); cursor: pointer;
+    }
+    .i-close { display: none; }
+    .open .i-open { display: none; }
+    .open .i-close { display: inline; }
+    .links {
+      display: none; position: absolute; left: 0; right: 0; top: 72px; flex-direction: column; gap: 0;
+      background: var(--bg); border-bottom: 1px solid var(--line); padding: 8px var(--gutter) 16px;
+    }
+    .open .links { display: flex; }
+    .links a { display: block; padding: 12px 0; font-size: 1rem; color: var(--ink); }
+  }
+  @media (max-width: 400px) { .right :global(.status) { font-size: 0.75rem; } }
+</style>

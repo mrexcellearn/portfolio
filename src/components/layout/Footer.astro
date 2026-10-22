@@ -1,0 +1,31 @@
+---
+import { site } from '../../config/site.config';
+const year = new Date().getFullYear();
+---
+<footer class="footer">
+  <div class="container">
+    <div class="top">
+      <p class="signoff">Thanks for reading. If a process of yours still runs on email and spreadsheets, I'd like to hear about it.</p>
+      <ul class="links">
+        <li><a href={site.links.linkedin}>LinkedIn</a></li>
+        <li><a href={site.links.tiktok}>TikTok @ Mr. Excellearn</a></li>
+        <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
+      </ul>
+    </div>
+    <div class="notes small muted">
+      <p>Case studies use fictional company names, vendors and amounts. Product names are trademarks of their respective owners.</p>
+      <p>&copy; {year} {site.name}</p>
+    </div>
+  </div>
+</footer>
+<style>
+  .footer { border-top: 1px solid var(--line); padding-block: 64px 40px; }
+  .top { display: grid; grid-template-columns: 1.4fr 1fr; gap: 40px; margin-bottom: 48px; }
+  .signoff { font-size: 1.25rem; font-weight: 300; max-width: 32ch; margin: 0; }
+  .links { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; justify-items: start; }
+  .links a { color: var(--ink); text-decoration-color: var(--line); text-underline-offset: 4px; }
+  .links a:hover { text-decoration-color: var(--ink); }
+  .notes { display: flex; justify-content: space-between; gap: 24px; flex-wrap: wrap; border-top: 1px solid var(--line); padding-top: 24px; }
+  .notes p { margin: 0; }
+  @media (max-width: 720px) { .top { grid-template-columns: 1fr; } }
+</style>
