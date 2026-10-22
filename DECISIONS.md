@@ -20,3 +20,8 @@ Choices made where the PRD was silent or where something had to change. Newest l
 | 14 | M2 | Power Fx is highlighted with Shiki's JS grammar; VBA uses Shiki's `vb` grammar | Shiki has no Power Fx grammar. |
 | 15 | M2 | Case 1 is written now (M2 sections only) as the engine's test case; M4 adds its rich components | Avoids a throwaway test case. |
 | 16 | M2 | Mermaid 12, dynamically imported per diagram when it nears the viewport, `securityLevel: 'strict'` | PRD: Mermaid only on case pages and only when visible. |
+| 17 | M3 | Case data (screens, flow steps, sheets) lives in a `data.ts` next to each case's `index.mdx` and is imported by the MDX | Keeps the MDX readable and typed. CSV input was not needed for v1. |
+| 18 | M3 | App pins attach to a block (`pin: n`) rather than x/y coordinates | Pins stay put when the mock reflows at narrow widths. |
+| 19 | M3 | Pins: click/Enter pins a note, hover previews it; notes are always rendered as a list next to the mock | Works for mouse, keyboard, touch and no-JS. |
+| 20 | M3 | `<MiniDashboard>` toggle is a pair of radio inputs styled with `:has()` | The toggle works with no JS. |
+| 21 | M3 | Flow branches stack via a container query when their column is narrow, not only at a viewport breakpoint | Nested conditions stay readable on desktop and at 360px. |

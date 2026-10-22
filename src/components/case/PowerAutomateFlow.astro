@@ -1,0 +1,48 @@
+---
+import FlowSteps from './FlowSteps.astro';
+import type { Step } from './flow-types';
+
+interface Props { steps: Step[]; title?: string; caption?: string; }
+const { steps, title = 'Cloud flow', caption } = Astro.props;
+---
+<figure class="paflow" data-paflow>
+  <figcaption>
+    <span class="t">{title}</span>
+    {caption && <span class="small muted">{caption}</span>}
+  </figcaption>
+  <div class="canvas">
+    <FlowSteps steps={steps} />
+  </div>
+</figure>
+<script>
+  // Reveal steps one after another as the flow scrolls into view.
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) {
+    document.querySelectorAll<HTMLElement>('[data-paflow]').forEach((fig) => {
+      const cards = [...fig.querySelectorAll<HTMLElement>('.fx-step')];
+      fig.classList.add('seq');
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((e) => {
+          if (!e.isIntersecting) return;
+          io.unobserve(e.target);
+          const i = cards.indexOf(e.target as HTMLElement);
+          setTimeout(() => e.target.classList.add('shown'), Math.min(i, 8) * 70);
+        });
+      }, { rootMargin: '0px 0px -8% 0px' });
+      cards.forEach((c) => io.observe(c));
+    });
+  }
+</script>
+<style>
+  .paflow { margin: 32px 0; }
+  figcaption { display: flex; flex-direction: column; gap: 2px; margin-bottom: 12px; }
+  .t { font-weight: 500; }
+  .canvas {
+    padding: 32px 16px; border: 1px solid var(--line); border-radius: var(--radius);
+    background-color: var(--bg);
+    background-image: radial-gradient(var(--line) 1px, transparent 1px);
+    background-size: 16px 16px;
+  }
+  .seq :global(.fx-step) { opacity: 0; transform: translateY(8px); transition: opacity 250ms ease, transform 250ms ease; }
+  .seq :global(.fx-step.shown) { opacity: 1; transform: none; }
+  @media (max-width: 480px) { .canvas { padding: 24px 8px; } }
+</style>

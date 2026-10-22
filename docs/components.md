@@ -59,3 +59,73 @@ Content goes in the slot.
 Renders the header (title, category, date, role, tool chips, illustrative badge) from frontmatter, a sticky table of
 contents built from the `##` headings at >= 1100px, the illustrative footer note, the next-case link and a CTA. The MDX body
 supplies the sections in the fixed order from PRD section 10.1.
+
+## `<PowerAutomateFlow>`
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `steps` | `Step[]` | required | See `src/components/case/flow-types.ts`. |
+| `title` | `string` | `Cloud flow` | |
+| `caption` | `string` | | |
+
+```ts
+type Step =
+  | { type: 'trigger'; title; detail?; config?: Record<string, string> }
+  | { type: 'action'; title; detail?; config?: Record<string, string> }
+  | { type: 'condition'; title; expression; yes: Step[]; no: Step[] }
+  | { type: 'approval'; title; detail?; outcomes?: string[] }
+  | { type: 'loop'; title; body: Step[] };
+```
+
+Steps render as a vertical chain of cards. `config` shows behind a native "Show configuration" toggle (keyboard and no-JS
+friendly). Conditions draw Yes/No branches side by side that re-join below; when a branch column is narrower than about
+560px the branches stack. Cards reveal one after another on scroll (off under reduced motion; always visible without JS).
+
+## `<PowerAppsScreens>`
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `screens` | `Screen[]` | required | See `src/components/case/apps-types.ts`. |
+| `frame` | `'tablet' \| 'phone'` | `'tablet'` | Device frame shape. |
+| `title` | `string` | `App screens` | Also names the tab list. |
+| `caption` | `string` | | |
+
+A `Screen` is `{ name, blocks: Block[], pins?: Pin[] }`. Blocks are neutral primitives: `header`, `search`, `tabs`,
+`gallery` (rows with a status badge), `form` (fields of kind `text`, `number`, `dropdown`, `date`, `textarea`,
+`attachment`, with `required` and `invalid` messages), `checklist`, `summary`, `status`, `buttons`, `voucher`, `note`,
+and `columns` (two columns of blocks). Status badges: Submitted, Draft, Returned, In review, Approved, Paid, Rejected.
+
+Annotation pins: give a block `pin: n` and add `{ n, title, note, code? }` to the screen's `pins`. The pin is a button;
+clicking it (or Enter/Space) highlights its note, hovering previews it. `code` renders as a Power Fx `<CodeBlock>`.
+
+Without JS every screen and every note is shown in order. With JS, screens become tabs (Arrow keys, Home, End).
+
+## `<ExcelSheet>`
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `sheets` | `Sheet[]` | required | See `src/components/case/sheet-types.ts`. |
+| `title` | `string` | `Workbook` | |
+| `caption` | `string` | | |
+
+A `Sheet` is `{ name, rows: Cell[][], widths?: number[], highlight?: string[], caption? }`. Row 1 is styled as the header
+row. A cell is a string, number, `null`, or `{ v, f?, fmt?, bold?, note? }`. Numbers format as IDR (`1.250.000`) unless
+`fmt` is `num` or `pct`; they right-align. Cells with a formula `f` show a small corner mark.
+
+Click a cell, or move with the Arrow keys, Home and End, to show its reference and formula in the formula bar. Sheet tabs
+sit along the bottom. Without JS all sheets show in order, and each sheet's formulas are listed in a "Formulas on this
+sheet" disclosure (also there with JS, for screen readers and copying). Data is inline (or imported from a `data.ts` next
+to the case's `index.mdx`).
+
+## `<MiniDashboard>`
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `kpis` | `Kpi[]` | required | `{ key, label, unit?, better: 'up' \| 'down', series: number[], periods?: string[] }` |
+| `title` | `string` | `Working capital dashboard` | |
+| `caption` | `string` | | |
+
+KPI tiles with the current value, a sparkline and a delta chip comparing the last two points. A "Color by movement /
+Color by benefit" toggle (native radio buttons styled as a segmented control, works without JS) switches between the
+original mistake (up is green) and the fix (colour follows `better`). Each chip also states in words whether the change is
+favorable, so colour is never the only signal.

@@ -1,0 +1,140 @@
+---
+import AppBlocks from './AppBlocks.astro';
+import CodeBlock from './CodeBlock.astro';
+import type { Screen } from './apps-types';
+
+interface Props { screens: Screen[]; frame?: 'tablet' | 'phone'; title?: string; caption?: string; }
+const { screens, frame = 'tablet', title = 'App screens', caption } = Astro.props;
+const uid = `pa${Math.random().toString(36).slice(2, 8)}`;
+---
+<figure class:list={['apps', `f-${frame}`]} data-apps>
+  <figcaption>
+    <span class="t">{title}</span>
+    {caption && <span class="small muted">{caption}</span>}
+  </figcaption>
+  <div class="tabs" role="tablist" aria-label={`${title}: screens`} hidden data-tabs>
+    {screens.map((s, i) => (
+      <button type="button" role="tab" id={`${uid}-tab-${i}`} aria-controls={`${uid}-panel-${i}`} aria-selected={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? 0 : -1}>
+        <span class="tn">{i + 1}</span>{s.name}
+      </button>
+    ))}
+  </div>
+  {screens.map((s, i) => (
+    <div class="panel" role="tabpanel" id={`${uid}-panel-${i}`} aria-labelledby={`${uid}-tab-${i}`} data-panel>
+      <h4 class="panel-name small muted">Screen {i + 1}: {s.name}</h4>
+      <div class="layout">
+        <div class="device" role="group" aria-label={`Mock screen: ${s.name}`}>
+          <div class="bezel">
+            <div class="screen"><AppBlocks blocks={s.blocks} uid={`${uid}-${i}`} /></div>
+          </div>
+        </div>
+        {s.pins && s.pins.length > 0 && (
+          <ol class="notes" aria-label="How it works">
+            {s.pins.map((p) => (
+              <li id={`${uid}-${i}-pin-${p.n}`} data-note={p.n}>
+                <span class="nn" aria-hidden="true">{p.n}</span>
+                <div>
+                  <p class="nt">{p.title}</p>
+                  <p class="nd small muted">{p.note}</p>
+                  {p.code && <CodeBlock code={p.code} lang={p.lang ?? 'powerfx'} />}
+                </div>
+              </li>
+            ))}
+          </ol>
+        )}
+      </div>
+    </div>
+  ))}
+</figure>
+<script>
+  document.querySelectorAll<HTMLElement>('[data-apps]').forEach((fig) => {
+    const tablist = fig.querySelector<HTMLElement>('[data-tabs]');
+    const tabs = [...fig.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+    const panels = [...fig.querySelectorAll<HTMLElement>('[data-panel]')];
+    if (tablist && tabs.length > 1) {
+      tablist.hidden = false;
+      fig.classList.add('tabbed');
+      const select = (i: number, focus = false) => {
+        tabs.forEach((t, j) => {
+          t.setAttribute('aria-selected', String(i === j));
+          t.tabIndex = i === j ? 0 : -1;
+          panels[j].hidden = i !== j;
+        });
+        if (focus) tabs[i].focus();
+      };
+      tabs.forEach((t, i) => {
+        t.addEventListener('click', () => select(i));
+        t.addEventListener('keydown', (e) => {
+          const k = e.key;
+          if (k === 'ArrowRight' || k === 'ArrowLeft' || k === 'Home' || k === 'End') {
+            e.preventDefault();
+            const n = k === 'Home' ? 0 : k === 'End' ? tabs.length - 1 : (i + (k === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
+            select(n, true);
+          }
+        });
+      });
+      select(0);
+    }
+    // Pins: clicking (or hovering) a pin highlights its note.
+    panels.forEach((panel) => {
+      const pins = [...panel.querySelectorAll<HTMLButtonElement>('[data-pin]')];
+      const notes = [...panel.querySelectorAll<HTMLElement>('[data-note]')];
+      const activate = (n: string | null) => {
+        pins.forEach((p) => p.setAttribute('aria-expanded', String(p.dataset.pin === n)));
+        notes.forEach((x) => x.classList.toggle('active', x.dataset.note === n));
+        panel.classList.toggle('has-active', n !== null);
+      };
+      let pinned: string | null = null;
+      pins.forEach((p) => {
+        p.setAttribute('aria-expanded', 'false');
+        p.addEventListener('click', () => {
+          pinned = pinned === p.dataset.pin ? null : p.dataset.pin ?? null;
+          activate(pinned);
+          if (pinned) notes.find((x) => x.dataset.note === pinned)?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        });
+        // Hover previews a note without changing what is pinned.
+        p.addEventListener('mouseenter', () => activate(p.dataset.pin ?? null));
+        p.addEventListener('mouseleave', () => activate(pinned));
+      });
+    });
+  });
+</script>
+<style>
+  .apps { margin: 32px 0; }
+  figcaption { display: flex; flex-direction: column; gap: 2px; margin-bottom: 12px; }
+  .t { font-weight: 500; }
+  .tabs { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 16px; border-bottom: 1px solid var(--line); }
+  .tabs button {
+    display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; border: 0; background: none;
+    font: inherit; font-size: var(--fs-small); color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px;
+  }
+  .tabs button[aria-selected='true'] { color: var(--ink); border-bottom-color: var(--ink); }
+  .tabs button:hover { color: var(--ink); }
+  .tn { width: 20px; height: 20px; border-radius: 50%; border: 1px solid currentColor; display: grid; place-items: center; font-size: 0.6875rem; }
+  .panel + .panel { margin-top: 40px; }
+  .tabbed .panel + .panel { margin-top: 0; }
+  .tabbed .panel-name { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .panel-name { margin: 0 0 12px; font-weight: 400; }
+  .layout { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 32px; align-items: start; }
+  .f-phone .layout { grid-template-columns: minmax(0, 320px) minmax(0, 1fr); }
+  .device { min-width: 0; }
+  .bezel { background: #1d1d1d; border-radius: 22px; padding: 12px; }
+  .f-phone .bezel { border-radius: 32px; padding: 14px 10px; max-width: 320px; }
+  .screen {
+    background: var(--bg); border-radius: 12px; padding: 16px; display: grid; gap: 14px; align-content: start;
+    min-height: 360px; overflow: hidden;
+  }
+  .f-phone .screen { border-radius: 20px; min-height: 520px; }
+  .notes { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+  .notes li { display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 12px; padding: 12px; border-radius: var(--radius-sm); transition: background 150ms ease, opacity 150ms ease; }
+  .has-active .notes li { opacity: 0.45; }
+  .has-active .notes li.active { opacity: 1; background: var(--band); }
+  .nn { width: 22px; height: 22px; border-radius: 50%; background: var(--warn); color: #fff; font-size: 11px; font-weight: 600; display: grid; place-items: center; }
+  .nt { margin: 0; font-weight: 500; font-size: 0.9375rem; }
+  .nd { margin: 4px 0 0; }
+  .notes :global(.codeblock) { margin: 12px 0 0; }
+  @media (max-width: 860px) {
+    .layout, .f-phone .layout { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (max-width: 480px) { .bezel { padding: 6px; border-radius: 14px; } .screen { padding: 12px; } }
+</style>
