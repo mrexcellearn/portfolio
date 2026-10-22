@@ -1,0 +1,53 @@
+---
+import { Code } from 'astro:components';
+
+interface Props {
+  code: string;
+  lang?: 'vba' | 'ts' | 'js' | 'powerfx' | 'sql' | 'excel';
+  filename?: string;
+  highlight?: number[];
+}
+const { code, lang = 'ts', filename, highlight = [] } = Astro.props;
+// Shiki has no Power Fx grammar; its expression syntax reads well with the JS grammar.
+const shikiLang = ({ vba: 'vb', ts: 'ts', js: 'js', powerfx: 'js', sql: 'sql', excel: 'txt' } as const)[lang];
+const label = { vba: 'VBA', ts: 'TypeScript', js: 'JavaScript', powerfx: 'Power Fx', sql: 'SQL', excel: 'Formula' }[lang];
+const src = code.replace(/^\n+|\s+$/g, '');
+const hl = new Set(highlight);
+---
+<figure class="codeblock" data-codeblock>
+  <div class="bar small">
+    <span class="name">{filename ?? label}</span>
+    {filename && <span class="muted">{label}</span>}
+    <button type="button" class="copy" data-copy>Copy</button>
+  </div>
+  <div class:list={['code', { hasHl: hl.size > 0 }]} data-hl={[...hl].join(',')}>
+    <Code code={src} lang={shikiLang} theme="github-light" />
+  </div>
+  <textarea hidden data-src>{src}</textarea>
+</figure>
+<script>
+  document.querySelectorAll<HTMLElement>('[data-codeblock]').forEach((fig) => {
+    const hl = fig.querySelector<HTMLElement>('[data-hl]');
+    const lines = (hl?.dataset.hl ?? '').split(',').filter(Boolean).map(Number);
+    const rows = fig.querySelectorAll('.line');
+    lines.forEach((n) => rows[n - 1]?.classList.add('hl'));
+    const btn = fig.querySelector<HTMLButtonElement>('[data-copy]');
+    const src = fig.querySelector<HTMLTextAreaElement>('[data-src]')?.value ?? '';
+    btn?.addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText(src); btn.textContent = 'Copied'; }
+      catch { btn.textContent = 'Press Ctrl+C'; }
+      setTimeout(() => (btn.textContent = 'Copy'), 1500);
+    });
+  });
+</script>
+<style>
+  .codeblock { margin: 32px 0; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: var(--bg); }
+  .bar { display: flex; align-items: center; gap: 12px; padding: 8px 8px 8px 16px; border-bottom: 1px solid var(--line); background: var(--band); }
+  .name { font-family: var(--font-mono); font-size: 0.75rem; }
+  .copy { margin-left: auto; min-height: 32px; padding: 0 12px; border: 1px solid var(--line); background: var(--bg); border-radius: 6px; font: inherit; cursor: pointer; color: var(--ink); }
+  .copy:hover { border-color: var(--ink); }
+  .code :global(pre) { margin: 0; padding: 16px 0; overflow-x: auto; font-size: 0.8125rem; line-height: 1.7; background: var(--bg) !important; }
+  .code :global(code) { display: block; min-width: max-content; }
+  .code :global(.line) { display: inline-block; width: 100%; padding: 0 16px; }
+  .code :global(.line.hl) { background: color-mix(in srgb, var(--warn) 10%, transparent); box-shadow: inset 2px 0 0 var(--warn); }
+</style>

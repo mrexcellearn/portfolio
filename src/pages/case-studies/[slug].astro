@@ -1,0 +1,20 @@
+---
+import { render } from 'astro:content';
+import Case from '../../layouts/Case.astro';
+import { publishedCases, caseSlug } from '../../lib/cases';
+import * as caseComponents from '../../components/case';
+
+export async function getStaticPaths() {
+  const cases = await publishedCases();
+  return cases.map((entry, i) => ({
+    params: { slug: caseSlug(entry) },
+    props: { entry, next: cases.length > 1 ? cases[(i + 1) % cases.length] : undefined },
+  }));
+}
+
+const { entry, next } = Astro.props;
+const { Content, headings } = await render(entry);
+---
+<Case entry={entry} headings={headings} next={next}>
+  <Content components={caseComponents} metrics={entry.data.metrics} illustrative={entry.data.illustrative} />
+</Case>

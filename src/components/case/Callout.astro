@@ -1,0 +1,16 @@
+---
+import Icon from '../ui/Icon.astro';
+interface Props { type?: 'insight' | 'warning'; title?: string; }
+const { type = 'insight', title } = Astro.props;
+const label = title ?? (type === 'insight' ? 'Insight' : 'Watch out');
+---
+<aside class:list={['callout', type]} aria-label={label}>
+  <span class="ic"><Icon name={type === 'insight' ? 'award' : 'clock'} size={18} /></span>
+  <div><p class="label small">{label}</p><div class="body"><slot /></div></div>
+</aside>
+<style>
+  .callout { display: grid; grid-template-columns: 24px 1fr; gap: 12px; padding: 20px; border-radius: var(--radius); background: var(--band); margin: 32px 0; border-left: 3px solid var(--ink); }
+  .warning { border-left-color: var(--warn); }
+  .label { margin: 0 0 4px; font-weight: 500; }
+  .body :global(p:last-child) { margin-bottom: 0; }
+</style>

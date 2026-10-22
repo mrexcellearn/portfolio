@@ -1,0 +1,30 @@
+---
+export interface ListStep { title: string; detail?: string; chips?: string[]; }
+interface Props { steps: ListStep[]; title?: string; }
+const { steps, title } = Astro.props;
+---
+<figure class="steplist">
+  {title && <figcaption class="small muted">{title}</figcaption>}
+  <ol>
+    {steps.map((s, i) => (
+      <li>
+        <span class="n" aria-hidden="true">{i + 1}</span>
+        <div>
+          <p class="t">{s.title}{s.chips?.map((c) => <code class="sys">{c}</code>)}</p>
+          {s.detail && <p class="d small muted">{s.detail}</p>}
+        </div>
+      </li>
+    ))}
+  </ol>
+</figure>
+<style>
+  .steplist { margin: 32px 0; }
+  figcaption { margin-bottom: 12px; }
+  ol { list-style: none; margin: 0; padding: 0; counter-reset: s; }
+  li { display: grid; grid-template-columns: 32px 1fr; gap: 16px; padding: 14px 0; border-top: 1px solid var(--line); }
+  li:last-child { border-bottom: 1px solid var(--line); }
+  .n { width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--line); display: grid; place-items: center; font-size: var(--fs-small); color: var(--muted); }
+  .t { margin: 2px 0 0; }
+  .d { margin: 4px 0 0; }
+  .sys { font-size: 0.75rem; background: var(--band); border: 1px solid var(--line); border-radius: 6px; padding: 2px 6px; margin-left: 8px; white-space: nowrap; }
+</style>
