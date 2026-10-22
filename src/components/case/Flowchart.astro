@@ -1,0 +1,82 @@
+---
+interface Props { code: string; title: string; caption?: string; }
+const { code, title, caption } = Astro.props;
+const src = code.replace(/^\n+|\s+$/g, '');
+---
+<figure class="flowchart" data-flowchart>
+  <figcaption>
+    <span class="t">{title}</span>
+    {caption && <span class="small muted">{caption}</span>}
+  </figcaption>
+  <div class="scroll" tabindex="0" role="img" aria-label={`Flowchart: ${title}. The step list is in the diagram source below.`}>
+    <div class="target" data-target hidden></div>
+    <noscript><p class="small muted">Diagram needs JavaScript. The source below lists every step.</p></noscript>
+  </div>
+  <details>
+    <summary class="small">Diagram source (Mermaid)</summary>
+    <pre><code data-src>{src}</code></pre>
+  </details>
+</figure>
+<script>
+  const figs = document.querySelectorAll<HTMLElement>('[data-flowchart]');
+  let n = 0;
+  const render = async (fig: HTMLElement) => {
+    const { default: mermaid } = await import('mermaid');
+    mermaid.initialize({
+      startOnLoad: false,
+      securityLevel: 'strict',
+      theme: 'base',
+      fontFamily: 'Inter Variable, Inter, system-ui, sans-serif',
+      flowchart: { useMaxWidth: false, curve: 'basis', padding: 16, nodeSpacing: 36, rankSpacing: 44 },
+      themeVariables: {
+        fontSize: '14px',
+        primaryColor: '#F3F4EE',
+        primaryBorderColor: '#111111',
+        primaryTextColor: '#111111',
+        lineColor: '#111111',
+        secondaryColor: '#FFFFFF',
+        tertiaryColor: '#FFFFFF',
+        clusterBkg: '#FFFFFF',
+        clusterBorder: '#E3E5DF',
+        edgeLabelBackground: '#FFFFFF',
+      },
+    });
+    const src = fig.querySelector('[data-src]')?.textContent ?? '';
+    const target = fig.querySelector<HTMLElement>('[data-target]');
+    if (!target) return;
+    try {
+      const { svg } = await mermaid.render(`fc-${n++}`, src);
+      target.innerHTML = svg;
+      target.hidden = false;
+      fig.classList.add('rendered');
+    } catch (e) {
+      console.error('Mermaid render failed', e);
+    }
+  };
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (e.isIntersecting) { io.unobserve(e.target); render(e.target as HTMLElement); }
+    });
+  }, { rootMargin: '200px' });
+  figs.forEach((f) => io.observe(f));
+</script>
+<style>
+  .flowchart { margin: 32px 0; }
+  figcaption { display: flex; flex-direction: column; gap: 2px; margin-bottom: 12px; }
+  .t { font-weight: 500; }
+  .scroll {
+    border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; overflow-x: auto;
+    background: var(--bg);
+    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 16px, #000 calc(100% - 16px), transparent 100%);
+    mask-image: linear-gradient(to right, transparent 0, #000 16px, #000 calc(100% - 16px), transparent 100%);
+  }
+  .flowchart:not(.rendered) .scroll { min-height: 120px; background: var(--band); }
+  .target { width: max-content; margin: 0 auto; }
+  .target :global(svg) { max-width: none !important; height: auto; }
+  .target :global(.node rect), .target :global(.node polygon), .target :global(.node circle) { rx: 12px; }
+  .target :global(.cluster rect) { rx: 12px; }
+  .target :global(.cluster-label), .target :global(.cluster .nodeLabel) { font-size: 13px; color: var(--muted); }
+  details { margin-top: 8px; }
+  summary { cursor: pointer; color: var(--muted); padding: 8px 0; }
+  pre { background: var(--band); border-radius: var(--radius-sm); padding: 16px; overflow-x: auto; font-size: 0.8125rem; margin: 8px 0 0; }
+</style>

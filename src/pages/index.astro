@@ -1,11 +1,12 @@
 ---
 import { existsSync } from 'node:fs';
-import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import Section from '../components/layout/Section.astro';
 import Button from '../components/ui/Button.astro';
 import Chip from '../components/ui/Chip.astro';
 import Card from '../components/ui/Card.astro';
+import CaseCard from '../components/case/CaseCard.astro';
+import { publishedCases } from '../lib/cases';
 import Icon from '../components/ui/Icon.astro';
 import MiniVisual from '../components/home/MiniVisual.astro';
 import { site } from '../config/site.config';
@@ -16,11 +17,9 @@ import { services } from '../data/services';
 import { tools } from '../data/playground';
 import { testimonials } from '../data/testimonials';
 
-const cases = (await getCollection('caseStudies', ({ data }) => data.status === 'published'))
-  .sort((a, b) => a.data.order - b.data.order)
-  .slice(0, 4);
+const cases = (await publishedCases()).slice(0, 4);
 
-const avatar = `${import.meta.env.BASE_URL}rey.jpg`;
+const avatar = url("/rey.jpg");
 const hasAvatar = existsSync('public/rey.jpg');
 const mailto = `mailto:${site.email}`;
 
@@ -109,14 +108,7 @@ const jsonLd = {
   {cases.length > 0 && (
     <Section id="work" title="Selected work" band>
       <div class:list={['work', `n${cases.length}`]}>
-        {cases.map((c) => (
-          <Card href={url(`/case-studies/${c.id.replace(/\/index$/, '')}`)} class="work-card">
-            <div class="meta small muted"><Chip>{c.data.category}</Chip><span>{c.data.date}</span></div>
-            <h3>{c.data.title}</h3>
-            <p class="muted">{c.data.summary}</p>
-            <span class="view small">View case study <Icon name="arrow" size={16} /></span>
-          </Card>
-        ))}
+        {cases.map((c) => <CaseCard entry={c} />)}
       </div>
     </Section>
   )}
@@ -200,10 +192,6 @@ const jsonLd = {
   .work.n1 { grid-template-columns: 1fr; max-width: 640px; }
   .work.n3 > :global(:first-child) { grid-column: span 2; }
   .meta { display: flex; align-items: center; gap: 12px; }
-  .work :global(.work-card) h3 { font-size: 1.375rem; font-weight: 400; margin: 8px 0 0; }
-  .view { display: inline-flex; gap: 6px; align-items: center; margin-top: auto; opacity: 0; transition: opacity 150ms ease; }
-  .work :global(.work-card:hover) .view, .work :global(.work-card:focus-visible) .view { opacity: 1; }
-  @media (hover: none) { .view { opacity: 1; } }
 
   .lead { margin-top: -24px; margin-bottom: 32px; }
   .tools { display: grid; gap: 24px; grid-template-columns: repeat(3, 1fr); }

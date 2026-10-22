@@ -1,0 +1,23 @@
+---
+import Base from '../../layouts/Base.astro';
+import CaseCard from '../../components/case/CaseCard.astro';
+import { publishedCases } from '../../lib/cases';
+
+const cases = await publishedCases();
+---
+<Base title="Case studies" description="Finance automation, reporting and process work, each case built in code rather than screenshots.">
+  <section class="container page">
+    <h1>Case studies</h1>
+    <p class="muted lead">Each case shows the business problem, the before and after, and the build itself. Flows, app screens and spreadsheets are rebuilt as live components, with fictional company data.</p>
+    {cases.length ? (
+      <div class="grid">{cases.map((c) => <CaseCard entry={c} headingLevel="h2" />)}</div>
+    ) : (
+      <p class="muted">The first case studies are on their way.</p>
+    )}
+  </section>
+</Base>
+<style>
+  .page { padding-block: 64px 96px; }
+  .lead { max-width: 60ch; font-size: 1.125rem; margin-bottom: 48px; }
+  .grid { display: grid; gap: 24px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr)); }
+</style>

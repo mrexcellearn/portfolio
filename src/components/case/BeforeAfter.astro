@@ -1,0 +1,61 @@
+---
+import { computeDelta, type Metric } from '../../lib/metrics';
+import Badge from '../ui/Badge.astro';
+
+interface Props { metrics: Metric[]; illustrative?: boolean; }
+const { metrics, illustrative = false } = Astro.props;
+const rows = metrics.map((m) => ({ ...m, delta: computeDelta(m) }));
+const arrow = { up: '↑', down: '↓', none: '→' } as const;
+const word = { good: 'improved', bad: 'worse', flat: 'unchanged', qualitative: 'changed' } as const;
+---
+<div class="ba">
+  {illustrative && <p class="flag"><Badge>Illustrative example</Badge></p>}
+  <table>
+    <caption class="sr-only">Before and after metrics</caption>
+    <thead>
+      <tr><th scope="col">Metric</th><th scope="col">Before</th><th scope="col" class="sr-only">Change</th><th scope="col">After</th><th scope="col">Delta</th></tr>
+    </thead>
+    <tbody>
+      {rows.map((r) => (
+        <tr>
+          <th scope="row">{r.label}</th>
+          <td class="before" data-label="Before">{r.before}</td>
+          <td class="arr" aria-hidden="true">→</td>
+          <td class="after" data-label="After">{r.after}</td>
+          <td class="delta-cell">
+            <span class:list={['delta', r.delta.verdict]}>
+              <span aria-hidden="true">{arrow[r.delta.direction]}</span>
+              {r.delta.text}
+              <span class="sr-only">, {word[r.delta.verdict]}</span>
+            </span>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+<style>
+  .ba { margin-block: 32px; }
+  .flag { margin: 0 0 12px; }
+  table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+  thead th { text-align: left; font-weight: 400; font-size: var(--fs-small); color: var(--muted); padding: 0 12px 12px 0; border-bottom: 1px solid var(--line); }
+  tbody th, tbody td { padding: 16px 12px 16px 0; border-bottom: 1px solid var(--line); text-align: left; vertical-align: middle; }
+  tbody th { font-weight: 400; width: 38%; }
+  .before { color: var(--muted); }
+  .after { color: var(--ink); font-weight: 500; }
+  .arr { color: var(--muted); width: 24px; }
+  .delta-cell { text-align: right; padding-right: 0; }
+  .delta { display: inline-flex; gap: 4px; align-items: center; font-size: var(--fs-small); padding: 4px 8px; border-radius: 999px; white-space: nowrap; border: 1px solid currentColor; }
+  .good { color: var(--ok); }
+  .bad { color: var(--bad); }
+  .flat, .qualitative { color: var(--muted); }
+  @media (max-width: 640px) {
+    thead { display: none; }
+    tbody tr { display: grid; grid-template-columns: 1fr auto 1fr; gap: 4px 12px; padding: 16px 0; border-bottom: 1px solid var(--line); }
+    tbody th, tbody td { border: 0; padding: 0; width: auto; }
+    tbody th { grid-column: 1 / -1; }
+    .delta-cell { grid-column: 1 / -1; text-align: left; margin-top: 4px; }
+    .before::before, .after::before { content: attr(data-label); display: block; font-size: var(--fs-small); color: var(--muted); font-weight: 400; }
+    .arr { align-self: end; }
+  }
+</style>

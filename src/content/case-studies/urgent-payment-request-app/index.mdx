@@ -1,0 +1,94 @@
+---
+title: Urgent Payment Request App
+summary: Replaced email-based urgent payment requests with a tracked Power Apps workflow, from request to treasury review.
+category: Automation
+date: "2026-08"
+role: Designer and builder
+tools: [Power Apps, SharePoint, Power Automate, SAP, Excel]
+status: published
+illustrative: true
+featured: true
+order: 1
+metrics:
+  - { label: Avg handling time per request, before: 45 min, after: 15 min, better: down }
+  - { label: Requests returned for missing documents, before: 30%, after: 5%, better: down }
+  - { label: Requests with a visible status, before: 0%, after: 100%, better: up }
+  - { label: Voucher preparation errors per month, before: "6", after: "1", better: down }
+---
+
+## Business case
+
+At Acme Mining, urgent payments arrived by email. A requester would forward an invoice, sometimes with the approval attached and sometimes without, and ask for the payment to go out the same day.
+
+AP then re-checked every field by hand, posted an advance in SAP, built a payment voucher in Excel, and chased treasury for review. Nothing showed the status of a request, so requesters followed up by email too.
+
+Mistakes surfaced late. A missing approval was often found only at treasury review, after AP had already done the posting and the voucher.
+
+## Before and after
+
+<BeforeAfter metrics={props.metrics} illustrative={props.illustrative} />
+
+## The flow
+
+The to-be process puts the document check at the front, so incomplete requests go back to the requester before AP touches them.
+
+<Flowchart
+  title="To-be process"
+  caption="Swim lanes: Requester, AP, Treasury"
+  code={`
+flowchart TB
+  subgraph R[Requester]
+    A[Submit request with invoice and approval]
+    R1[Fix and resubmit]
+  end
+  subgraph S[System]
+    B{Required documents attached?}
+  end
+  subgraph AP[AP]
+    C[Verify request]
+    D[Post advance in SAP]
+    E[Create payment voucher]
+    F[Attach voucher and submit]
+    AP1[Correct voucher]
+  end
+  subgraph T[Treasury]
+    G{Treasury review}
+    H([Approved and paid])
+  end
+  A --> B
+  B -- No --> R1
+  R1 --> B
+  B -- Yes --> C --> D --> E --> F --> G
+  G -- Approve --> H
+  G -- Reject with comments --> AP1 --> F
+`}
+/>
+
+## The build
+
+### As-is: the manual process
+
+Before the app, every urgent request went through these steps by hand.
+
+<StepList
+  title="Manual AP steps per request"
+  steps={[
+    { title: 'Check the request details', detail: 'Remarks, amount, currency, beneficiary and attachments.' },
+    { title: 'Post the advance', chips: ['F-47'], detail: 'Document date, posting date, document type, period, reference, header text, account, tax code, due date, cost and profit center, assignment, text.' },
+    { title: 'Review the document overview and save' },
+    { title: 'Pull vendor open items', chips: ['FBL1N'], detail: 'Normal items, special GL items and noted items.' },
+    { title: 'Paste into the voucher template', detail: 'Pick the vendor and enter the voucher number.' },
+    { title: 'Print the voucher' },
+    { title: 'Attach the voucher and submit for treasury review' },
+  ]}
+/>
+
+## Results
+
+Requests now arrive complete, or they go straight back to the requester with a reason. AP spends its time on verification and posting instead of chasing attachments, and every request has a status anyone can check.
+
+## What I'd do differently
+
+- Add duplicate-invoice detection before a request reaches AP.
+- Capture the requester's cost center from a lookup instead of free text.
+- Build a status-badge PCF component for the gallery, so the colour rule lives in one place.
