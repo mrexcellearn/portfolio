@@ -1,0 +1,159 @@
+---
+// Neutral app-UI primitives for <PowerAppsScreens>. Recursive for 'columns'.
+import type { Block, Status } from './apps-types';
+interface Props { blocks: Block[]; uid: string; }
+const { blocks, uid } = Astro.props;
+const tone = (s: Status) =>
+  ({ Submitted: 'neutral', Draft: 'neutral', Returned: 'warn', 'In review': 'info', Approved: 'ok', Paid: 'okfill', Rejected: 'bad' })[s];
+---
+{blocks.map((b) => (
+  <div class:list={['blk', `b-${b.type}`]}>
+    {'pin' in b && b.pin && (
+      <button type="button" class="pin" data-pin={b.pin} aria-controls={`${uid}-pin-${b.pin}`} aria-label={`Annotation ${b.pin}`}>{b.pin}</button>
+    )}
+    {b.type === 'header' && (
+      <div class="hdr">
+        {b.back && <span class="back" aria-hidden="true">‹</span>}
+        <span class="hdr-t">{b.title}</span>
+        {b.action && <span class="hdr-a">{b.action}</span>}
+      </div>
+    )}
+    {b.type === 'search' && (
+      <div class="search">
+        <span class="field-box s">⌕ <span class="ph">{b.placeholder ?? 'Search'}</span></span>
+        {b.filters && <div class="filters">{b.filters.map((f, i) => <span class:list={['flt', { on: i === 0 }]}>{f}</span>)}</div>}
+      </div>
+    )}
+    {b.type === 'tabs' && (
+      <div class="apptabs">{b.items.map((t, i) => <span class:list={['apptab', { on: i === (b.active ?? 0) }]}>{t}</span>)}</div>
+    )}
+    {b.type === 'gallery' && (
+      <ul class="gallery">
+        {b.items.map((it) => (
+          <li>
+            <div class="g-main"><span class="g-t">{it.title}</span>{it.subtitle && <span class="g-s">{it.subtitle}</span>}</div>
+            <div class="g-side">{it.meta && <span class="g-m">{it.meta}</span>}<span class:list={['sb', tone(it.status)]}>{it.status}</span></div>
+          </li>
+        ))}
+      </ul>
+    )}
+    {b.type === 'form' && (
+      <div class:list={['form', { two: b.columns === 2 }]}>
+        {b.fields.map((f) => (
+          <div class:list={['fld', { wide: f.kind === 'textarea' || f.kind === 'attachment' }]}>
+            <span class="lbl">{f.label}{f.required && <span class="req" aria-label="required"> *</span>}</span>
+            {f.kind === 'attachment' ? (
+              <span class:list={['attach', { has: !!f.value }]}>{f.value ? `📎 ${f.value}` : '+ Attach file'}</span>
+            ) : (
+              <span class:list={['field-box', f.kind, { invalid: !!f.invalid, empty: !f.value }]}>
+                {f.value || ' '}{f.kind === 'dropdown' && <span class="caret" aria-hidden="true">▾</span>}{f.kind === 'date' && <span class="caret" aria-hidden="true">▦</span>}
+              </span>
+            )}
+            {f.invalid && <span class="err">{f.invalid}</span>}
+          </div>
+        ))}
+      </div>
+    )}
+    {b.type === 'checklist' && (
+      <div class="check">
+        {b.title && <span class="lbl">{b.title}</span>}
+        <ul>{b.items.map((i) => <li class:list={{ done: i.done }}><span class="box" aria-hidden="true">{i.done ? '✓' : ''}</span>{i.label}<span class="sr-only">{i.done ? ' (done)' : ' (missing)'}</span></li>)}</ul>
+      </div>
+    )}
+    {b.type === 'summary' && (
+      <div class="summary">
+        {b.title && <span class="lbl">{b.title}</span>}
+        <dl>{b.rows.map(([k, v]) => <><dt>{k}</dt><dd>{v}</dd></>)}</dl>
+      </div>
+    )}
+    {b.type === 'status' && (
+      <div class="statusrow"><span class="lbl">{b.label ?? 'Status'}</span><span class:list={['sb', tone(b.status)]}>{b.status}</span></div>
+    )}
+    {b.type === 'buttons' && (
+      <div class="btns">{b.items.map((x) => <span class:list={['abtn', x.variant ?? 'primary']}>{x.label}</span>)}</div>
+    )}
+    {b.type === 'voucher' && (
+      <div class="voucher">
+        <span class="v-t">{b.title}</span>
+        <dl>{b.lines.map(([k, v]) => <><dt>{k}</dt><dd>{v}</dd></>)}</dl>
+        <div class="v-total"><span>Total</span><span>{b.total}</span></div>
+      </div>
+    )}
+    {b.type === 'note' && <p class="anote">{b.text}</p>}
+    {b.type === 'columns' && (
+      <div class="cols">
+        <div class="col"><Astro.self blocks={b.left} uid={uid} /></div>
+        <div class="col"><Astro.self blocks={b.right} uid={uid} /></div>
+      </div>
+    )}
+  </div>
+))}
+<style>
+  .blk { position: relative; }
+  .pin {
+    position: absolute; top: -9px; right: -9px; z-index: 2; width: 22px; height: 22px; border-radius: 50%;
+    border: 2px solid var(--bg); background: var(--warn); color: #fff; font: 600 11px/1 var(--font-sans);
+    cursor: pointer; display: grid; place-items: center; padding: 0; box-shadow: 0 0 0 1px var(--warn);
+  }
+  .pin:hover, .pin[aria-expanded='true'] { background: var(--ink); box-shadow: 0 0 0 1px var(--ink); }
+  .hdr { display: flex; align-items: center; gap: 10px; background: var(--ink); color: #fff; padding: 12px 16px; margin: -16px -16px 0; font-size: 0.875rem; }
+  .hdr-t { font-weight: 500; flex: 1; }
+  .hdr-a { font-size: 0.75rem; border: 1px solid rgba(255,255,255,.4); border-radius: 6px; padding: 3px 8px; }
+  .back { font-size: 1.1rem; line-height: 1; }
+  .lbl { display: block; font-size: 0.6875rem; color: var(--muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .req { color: var(--bad); }
+  .field-box { display: flex; align-items: center; justify-content: space-between; min-height: 32px; border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; font-size: 0.8125rem; background: var(--bg); }
+  .field-box.textarea { min-height: 52px; align-items: flex-start; }
+  .field-box.invalid { border-color: var(--bad); }
+  .field-box.s { justify-content: flex-start; gap: 8px; color: var(--muted); }
+  .caret { color: var(--muted); font-size: 0.75rem; }
+  .err { display: block; color: var(--bad); font-size: 0.6875rem; margin-top: 3px; }
+  .search { display: grid; gap: 8px; }
+  .filters { display: flex; gap: 6px; flex-wrap: wrap; }
+  .flt { font-size: 0.6875rem; border: 1px solid var(--line); border-radius: 999px; padding: 3px 9px; }
+  .flt.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .apptabs { display: flex; gap: 16px; border-bottom: 1px solid var(--line); font-size: 0.8125rem; }
+  .apptab { padding: 6px 0; color: var(--muted); }
+  .apptab.on { color: var(--ink); box-shadow: inset 0 -2px 0 var(--ink); }
+  .gallery { list-style: none; margin: 0; padding: 0; border: 1px solid var(--line); border-radius: var(--radius-sm); }
+  .gallery li { display: flex; justify-content: space-between; gap: 12px; align-items: center; padding: 10px 12px; font-size: 0.8125rem; }
+  .gallery li + li { border-top: 1px solid var(--line); }
+  .g-main, .g-side { display: flex; flex-direction: column; min-width: 0; }
+  .g-side { align-items: flex-end; gap: 4px; flex: none; }
+  .g-t { font-weight: 500; }
+  .g-s, .g-m { color: var(--muted); font-size: 0.75rem; }
+  .sb { display: inline-block; font-size: 0.6875rem; font-weight: 500; padding: 2px 8px; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; }
+  .sb.neutral { color: var(--muted); }
+  .sb.warn { color: var(--warn); }
+  .sb.info { color: var(--ink); }
+  .sb.ok { color: var(--ok); }
+  .sb.okfill { background: var(--ok); border-color: var(--ok); color: #fff; }
+  .sb.bad { color: var(--bad); }
+  .form { display: grid; gap: 10px; }
+  .form.two { grid-template-columns: 1fr 1fr; }
+  .form.two .wide { grid-column: 1 / -1; }
+  .attach { display: block; border: 1px dashed var(--line); border-radius: 6px; padding: 8px 10px; font-size: 0.8125rem; color: var(--muted); }
+  .attach.has { border-style: solid; color: var(--ink); background: var(--band); }
+  .check ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: 0.8125rem; }
+  .check li { display: flex; gap: 8px; align-items: center; color: var(--muted); }
+  .check li.done { color: var(--ink); }
+  .box { width: 16px; height: 16px; border: 1px solid var(--line); border-radius: 4px; display: grid; place-items: center; font-size: 0.625rem; }
+  .done .box { background: var(--ok); border-color: var(--ok); color: #fff; }
+  .summary dl, .voucher dl { display: grid; grid-template-columns: max-content 1fr; gap: 4px 12px; margin: 0; font-size: 0.8125rem; }
+  .summary dt, .voucher dt { color: var(--muted); }
+  .summary dd, .voucher dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; }
+  .statusrow { display: flex; justify-content: space-between; align-items: center; }
+  .statusrow .lbl { margin: 0; }
+  .btns { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }
+  .abtn { font-size: 0.8125rem; padding: 7px 14px; border-radius: 6px; border: 1px solid var(--ink); background: var(--ink); color: #fff; }
+  .abtn.secondary { background: var(--bg); color: var(--ink); border-color: var(--line); }
+  .abtn.danger { background: var(--bg); color: var(--bad); border-color: var(--bad); }
+  .voucher { border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 12px; background: var(--bg); font-family: var(--font-mono); }
+  .voucher dl, .voucher .v-total { font-size: 0.75rem; }
+  .v-t { display: block; font-size: 0.75rem; font-weight: 600; margin-bottom: 8px; border-bottom: 1px solid var(--line); padding-bottom: 6px; }
+  .v-total { display: flex; justify-content: space-between; border-top: 1px solid var(--ink); margin-top: 8px; padding-top: 6px; font-weight: 600; }
+  .anote { margin: 0; font-size: 0.75rem; color: var(--muted); }
+  .cols { display: grid; grid-template-columns: 1.2fr 1fr; gap: 16px; }
+  .col { display: grid; gap: 14px; align-content: start; }
+  @media (max-width: 560px) { .cols, .form.two { grid-template-columns: 1fr; } }
+</style>

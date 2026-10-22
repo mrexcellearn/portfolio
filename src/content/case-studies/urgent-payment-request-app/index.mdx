@@ -16,6 +16,8 @@ metrics:
   - { label: Voucher preparation errors per month, before: "6", after: "1", better: down }
 ---
 
+import { screens, flow, sheets } from './data';
+
 ## Business case
 
 At Acme Mining, urgent payments arrived by email. A requester would forward an invoice, sometimes with the approval attached and sometimes without, and ask for the payment to go out the same day.
@@ -82,6 +84,33 @@ Before the app, every urgent request went through these steps by hand.
     { title: 'Attach the voucher and submit for treasury review' },
   ]}
 />
+
+### The app
+
+Four screens replace the email thread. Requesters can't submit without the documents, everyone sees the status, and AP and treasury work from the same record. Click the numbered pins to see how each part works.
+
+<PowerAppsScreens
+  title="Urgent payment request app"
+  caption="Canvas app on a SharePoint list. Mock screens, rebuilt in code."
+  frame="tablet"
+  screens={screens}
+/>
+
+### The cloud flow
+
+A single flow runs on every new request. It returns incomplete requests straight away, and otherwise routes the request to treasury for approval and writes the outcome back to the list.
+
+<PowerAutomateFlow
+  title="Route urgent payment request"
+  caption="Automated cloud flow. Open a step to see its configuration."
+  steps={flow}
+/>
+
+### The voucher workbook
+
+The voucher used to be built by pasting vendor open items into a template. The template now does the lookup itself: pick the vendor, and the advance, open invoices and amount to pay fill in. Click a cell to see its formula.
+
+<ExcelSheet title="Payment voucher workbook" sheets={sheets} />
 
 ## Results
 

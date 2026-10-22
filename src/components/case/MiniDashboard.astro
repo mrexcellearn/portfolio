@@ -1,0 +1,104 @@
+---
+import { benefitVerdict } from '../../lib/metrics';
+
+export interface Kpi {
+  key: string;            // "DSO"
+  label: string;          // "Days sales outstanding"
+  unit?: string;          // "days"
+  better: 'up' | 'down';  // direction of benefit
+  series: number[];       // oldest first; last value is current
+  periods?: string[];     // labels matching series
+}
+interface Props { kpis: Kpi[]; title?: string; caption?: string; }
+const { kpis, title = 'Working capital dashboard', caption } = Astro.props;
+const uid = `md${Math.random().toString(36).slice(2, 8)}`;
+
+const tiles = kpis.map((k) => {
+  const cur = k.series.at(-1)!;
+  const prev = k.series.at(-2) ?? cur;
+  const change = cur - prev;
+  const movement: 'up' | 'down' | 'flat' = change > 0 ? 'up' : change < 0 ? 'down' : 'flat';
+  const benefit = benefitVerdict(change, k.better);
+  // Sparkline geometry
+  const w = 120, h = 32, pad = 2;
+  const min = Math.min(...k.series), max = Math.max(...k.series);
+  const span = max - min || 1;
+  const pts = k.series.map((v, i) => [pad + (i * (w - pad * 2)) / Math.max(1, k.series.length - 1), h - pad - ((v - min) / span) * (h - pad * 2)]);
+  const path = pts.map(([x, y], i) => `${i ? 'L' : 'M'}${x.toFixed(1)},${y.toFixed(1)}`).join(' ');
+  const [lx, ly] = pts.at(-1)!;
+  return { ...k, cur, prev, change, movement, benefit, path, lx, ly, w, h };
+});
+const arrow = { up: '↑', down: '↓', flat: '→' } as const;
+---
+<figure class="dash" data-dash>
+  <figcaption>
+    <span class="t">{title}</span>
+    {caption && <span class="small muted">{caption}</span>}
+  </figcaption>
+  <fieldset class="mode">
+    <legend class="sr-only">Delta colour rule</legend>
+    <label><input type="radio" name={`${uid}-mode`} value="movement" /> Color by movement</label>
+    <label><input type="radio" name={`${uid}-mode`} value="benefit" checked /> Color by benefit</label>
+  </fieldset>
+  <div class="tiles">
+    {tiles.map((t) => (
+      <div class="tile" data-move={t.movement} data-benefit={t.benefit}>
+        <div class="head">
+          <span class="key">{t.key}</span>
+          <span class="lbl small muted">{t.label}</span>
+        </div>
+        <p class="val"><span class="n">{t.cur}</span>{t.unit && <span class="u small muted"> {t.unit}</span>}</p>
+        <svg class="spark" viewBox={`0 0 ${t.w} ${t.h}`} width={t.w} height={t.h} aria-hidden="true">
+          <path d={t.path} fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" />
+          <circle cx={t.lx} cy={t.ly} r="2.5" fill="currentColor" />
+        </svg>
+        <p class="delta small">
+          <span class="chip">
+            <span aria-hidden="true">{arrow[t.movement]}</span>
+            {t.change > 0 ? '+' : t.change < 0 ? '−' : '±'}{Math.abs(t.change)}{t.unit ? ` ${t.unit}` : ''}
+          </span>
+          <span class="why muted">
+            <span class="by-benefit">{t.benefit === 'good' ? 'favorable' : t.benefit === 'bad' ? 'unfavorable' : 'unchanged'}, {t.better === 'up' ? 'higher' : 'lower'} is better</span>
+            <span class="by-move">{t.movement === 'up' ? 'went up' : t.movement === 'down' ? 'went down' : 'unchanged'}</span>
+          </span>
+        </p>
+        {t.periods && <p class="per small muted">{t.periods.at(-2)} → {t.periods.at(-1)}</p>}
+      </div>
+    ))}
+  </div>
+  <p class="explain small muted">
+    <span class="by-benefit">Colour follows the direction of benefit: a falling DPO is red because paying suppliers faster ties up cash.</span>
+    <span class="by-move">This is the original mistake: up is green and down is red, so a falling DPO looks "good".</span>
+  </p>
+</figure>
+<style>
+  .dash { margin: 32px 0; border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; background: var(--bg); }
+  figcaption { display: flex; flex-direction: column; gap: 2px; margin-bottom: 16px; }
+  .t { font-weight: 500; }
+  .mode { display: inline-flex; border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 3px; margin: 0 0 20px; gap: 2px; flex-wrap: wrap; }
+  .mode label { display: inline-flex; align-items: center; min-height: 36px; padding: 0 12px; border-radius: 6px; font-size: var(--fs-small); cursor: pointer; color: var(--muted); }
+  .mode input { position: absolute; opacity: 0; pointer-events: none; }
+  .mode label:has(input:checked) { background: var(--ink); color: #fff; }
+  .mode label:has(input:focus-visible) { outline: 2px solid var(--ink); outline-offset: 2px; }
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 12px; }
+  .tile { border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 16px; display: grid; gap: 8px; --c: var(--muted); }
+  .head { display: flex; flex-direction: column; }
+  .key { font-weight: 500; }
+  .val { margin: 0; }
+  .n { font-size: 1.75rem; font-weight: 300; font-variant-numeric: tabular-nums; }
+  .spark { color: var(--c); width: 100%; max-width: 160px; height: 32px; }
+  .delta { margin: 0; display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; }
+  .chip { display: inline-flex; gap: 4px; border: 1px solid var(--c); color: var(--c); border-radius: 999px; padding: 2px 8px; white-space: nowrap; }
+  .per { margin: 0; }
+  .explain { margin: 16px 0 0; }
+  .by-move { display: none; }
+  /* benefit mode (default) */
+  .tile[data-benefit='good'] { --c: var(--ok); }
+  .tile[data-benefit='bad'] { --c: var(--bad); }
+  /* movement mode: the original mistake */
+  .dash:has(input[value='movement']:checked) .tile { --c: var(--muted); }
+  .dash:has(input[value='movement']:checked) .tile[data-move='up'] { --c: var(--ok); }
+  .dash:has(input[value='movement']:checked) .tile[data-move='down'] { --c: var(--bad); }
+  .dash:has(input[value='movement']:checked) .by-move { display: inline; }
+  .dash:has(input[value='movement']:checked) .by-benefit { display: none; }
+</style>
