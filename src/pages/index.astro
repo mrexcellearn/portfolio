@@ -53,35 +53,35 @@ const jsonLd = {
   </section>
 
   <Section id="proof" band>
-    <div class="two-col">
-      <div>
-        <h2 class="col-title">Experience</h2>
-        <ul class="rows">
-          {experience.map((r) => (
-            <li class="row">
-              <Icon name="briefcase" />
-              <div class="row-body"><span>{r.title}</span><span class="small muted">{r.org}</span></div>
-              <span class="small muted date">{r.dates}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
-      <div>
-        <h2 class="col-title">Proof</h2>
-        <ul class="rows">
-          {proof.map((r) => {
-            const inner = (
-              <>
-                <Icon name={r.icon} />
-                <div class="row-body"><span>{r.title}</span><span class="small muted">{r.detail}</span></div>
-                {r.href && cases.length ? <span class="arrow"><Icon name="arrow-up-right" size={16} /></span> : <span />}
-              </>
-            );
-            return <li class="row">{r.href && cases.length ? <a class="row-link" href={url(r.href)}>{inner}</a> : inner}</li>;
-          })}
-        </ul>
-      </div>
-    </div>
+    <h2 class="col-title">Experience</h2>
+    <ol class="jobs">
+      {experience.map((r) => (
+        <li class="job">
+          <div class="job-meta small muted">
+            <span class="date">{r.dates}</span>
+            <span>{r.org}</span>
+          </div>
+          <div>
+            <h3 class="job-title">{r.title}</h3>
+            <ul class="wins">{r.highlights.map((h) => <li>{h}</li>)}</ul>
+          </div>
+        </li>
+      ))}
+    </ol>
+
+    <h2 class="col-title proof-title">Proof</h2>
+    <ul class="rows proof">
+      {proof.map((r) => {
+        const inner = (
+          <>
+            <Icon name={r.icon} />
+            <div class="row-body"><span>{r.title}</span><span class="small muted">{r.detail}</span></div>
+            {r.href && cases.length ? <span class="arrow"><Icon name="arrow-up-right" size={16} /></span> : <span />}
+          </>
+        );
+        return <li class="row">{r.href && cases.length ? <a class="row-link" href={url(r.href)}>{inner}</a> : inner}</li>;
+      })}
+    </ul>
   </Section>
 
   <Section id="help" title="How I can help">
@@ -164,7 +164,16 @@ const jsonLd = {
   .sub { max-width: 52ch; }
   .actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 32px; }
 
-  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; }
+  .jobs { list-style: none; margin: 0 0 64px; padding: 0; border-top: 1px solid var(--line); }
+  .job { display: grid; grid-template-columns: 240px 1fr; gap: 32px; padding: 24px 0; border-bottom: 1px solid var(--line); }
+  .job-meta { display: flex; flex-direction: column; gap: 4px; }
+  .job-meta .date { color: var(--ink); text-align: left; }
+  .job-title { margin: 0 0 8px; }
+  .wins { margin: 0; padding-left: 18px; display: grid; gap: 6px; max-width: 72ch; font-size: 0.9375rem; }
+  .wins li::marker { color: var(--muted); }
+  .proof-title { margin-top: 0; }
+  .proof { display: grid; grid-template-columns: 1fr 1fr; column-gap: 48px; border-top: 0; }
+  .proof .row:nth-child(-n+2) { border-top: 1px solid var(--line); }
   .col-title { font-size: var(--fs-h3); font-weight: var(--fw-heading); margin-bottom: 16px; }
   .rows { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
   .row { border-bottom: 1px solid var(--line); }
@@ -174,7 +183,6 @@ const jsonLd = {
   .row-link:hover .arrow { transform: translate(2px, -2px); color: var(--ink); }
   .row-body { display: flex; flex-direction: column; }
   .arrow { color: var(--muted); transition: transform 150ms ease; }
-  .date { text-align: right; }
 
   .services { border-top: 1px solid var(--line); }
   .service { border-bottom: 1px solid var(--line); }
@@ -207,7 +215,9 @@ const jsonLd = {
 
   @media (max-width: 899px) {
     .hero { grid-template-columns: 1fr; padding-block: 64px; gap: 32px; }
-    .two-col { grid-template-columns: 1fr; gap: 48px; }
+    .job { grid-template-columns: 1fr; gap: 8px; }
+    .proof { grid-template-columns: 1fr; }
+    .proof .row:nth-child(2) { border-top: 0; }
     .svc-body { grid-template-columns: 1fr; padding-left: 0; gap: 24px; }
     .tools { grid-template-columns: 1fr; }
     .work { grid-template-columns: 1fr; }
@@ -215,7 +225,6 @@ const jsonLd = {
   }
   @media (max-width: 600px) {
     .row { grid-template-columns: 20px 1fr; }
-    .date { grid-column: 2; text-align: left; margin-top: -12px; }
   }
   @media (max-width: 720px) { summary { font-size: 1.0625rem; grid-template-columns: 32px 1fr 24px; } }
 </style>
