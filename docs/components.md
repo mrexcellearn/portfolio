@@ -127,5 +127,5 @@ to the case's `index.mdx`).
 
 KPI tiles with the current value, a sparkline and a delta chip comparing the last two points. A "Color by movement /
 Color by benefit" toggle (native radio buttons styled as a segmented control, works without JS) switches between the
-original mistake (up is green) and the fix (colour follows `better`). Each chip also states in words whether the change is
+original mistake (every fall is green) and the fix (colour follows `better`). Each chip also states in words whether the change is
 favorable, so colour is never the only signal.

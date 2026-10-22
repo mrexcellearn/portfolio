@@ -1,0 +1,107 @@
+---
+title: Working Capital Dashboard and Monthly Review Rhythm
+summary: Turned a manual working capital report into an upload-and-review dashboard, with a monthly forum that makes owners accountable.
+category: Reporting
+date: "2026-06"
+role: Designer and builder
+tools: [HTML/JS, Excel, SAP exports]
+status: published
+illustrative: true
+featured: true
+order: 2
+metrics:
+  - { label: Monthly preparation time, before: 6 h, after: 1 h, better: down }
+  - { label: Metrics with a named owner, before: 0 of 5, after: 5 of 5, better: up }
+  - { label: Review actions closed on time, before: n/a, after: 80%, better: up }
+  - { label: Misread KPI colors, before: frequent, after: none, better: down }
+---
+
+import { kpis, sheets } from './data';
+
+## Business case
+
+At Acme Mining, the working capital numbers (DSO, DPO, DIO and the cash conversion cycle) were compiled by hand from system exports every month. The report was reviewed once, then forgotten until the next one.
+
+There was a quieter problem too. The colour coding followed the direction of movement, not the direction of benefit. A fall was green and a rise was red, so a falling DPO looked good, when paying suppliers faster actually ties up cash.
+
+A dashboard without an operating rhythm is just a report. The fix had to cover both: less time preparing the numbers, and a monthly forum where each number has an owner and an action.
+
+## Before and after
+
+<BeforeAfter metrics={props.metrics} illustrative={props.illustrative} />
+
+## The flow
+
+The monthly rhythm, from export to next month's check.
+
+<Flowchart
+  title="Monthly review rhythm"
+  caption="Prepared by AP and Treasury, reviewed with metric owners"
+  code={`
+flowchart LR
+  A[Export from system] --> B[Upload to dashboard]
+  B --> C[Validate and edit inline]
+  C --> D[Monthly review forum]
+  D --> E[Owner action per metric with a due date]
+  E --> F{Next month}
+  F --> G[Check open actions first]
+  G --> A
+`}
+/>
+
+## The build
+
+### The upload template
+
+The template mirrors the exports, so preparing the month is a paste, not a rebuild. The calc tab turns balances into days on a 30-day basis. Click a cell to see its formula.
+
+<ExcelSheet title="Working capital workbook" sheets={sheets} />
+
+### The dashboard
+
+Each KPI tile shows the current value, a six-month sparkline, and the change since last month. The delta colour follows each metric's direction of benefit. Switch the toggle to see the original mistake: DPO fell by 3 days and turns green under "Color by movement", even though it is unfavorable.
+
+<MiniDashboard
+  title="Working capital, October"
+  caption="Dummy data, IDR basis, 30-day months"
+  kpis={kpis}
+/>
+
+### The colour rule
+
+The whole fix is one function. Each metric carries a `better` flag, and the colour comes from comparing the movement to it.
+
+<CodeBlock
+  lang="ts"
+  filename="delta-color.ts"
+  highlight={[8, 9]}
+  code={`
+type Better = 'up' | 'down';
+type Tone = 'good' | 'bad' | 'flat';
+
+// Colour by direction of BENEFIT, not direction of movement.
+export function deltaTone(prev: number, cur: number, better: Better): Tone {
+  const change = cur - prev;
+  if (change === 0) return 'flat';
+  const movedUp = change > 0;
+  return movedUp === (better === 'up') ? 'good' : 'bad';
+}
+
+deltaTone(58, 55, 'up');   // DPO fell: 'bad'
+deltaTone(46, 44, 'down'); // DSO fell: 'good'
+`}
+/>
+
+<Callout type="insight" title="Read DPO with the payment terms">
+  EXW terms shorten the effective payment window, because freight transit eats into it. A DPO that looks favorable on paper can still mean suppliers are being paid early relative to when goods actually arrive.
+</Callout>
+
+## Results
+
+Preparing the month now takes about an hour instead of most of a day. Every metric has a named owner, and the review starts with last month's open actions, so the numbers lead to decisions instead of a slide that gets filed away. Nobody misreads a falling DPO as good news anymore.
+
+## What I'd do differently
+
+- Add a PDF export with one page per slide, for people who review offline.
+- Add threshold alerts so a metric outside its range flags itself before the forum.
+- Add trend annotations, so a one-off spike carries its explanation with it.

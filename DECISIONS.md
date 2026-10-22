@@ -25,3 +25,7 @@ Choices made where the PRD was silent or where something had to change. Newest l
 | 19 | M3 | Pins: click/Enter pins a note, hover previews it; notes are always rendered as a list next to the mock | Works for mouse, keyboard, touch and no-JS. |
 | 20 | M3 | `<MiniDashboard>` toggle is a pair of radio inputs styled with `:has()` | The toggle works with no JS. |
 | 21 | M3 | Flow branches stack via a container query when their column is narrow, not only at a viewport breakpoint | Nested conditions stay readable on desktop and at 360px. |
+| 22 | M4 | "Color by movement" (the original mistake) colours every fall green and every rise red | Matches the PRD story: under that rule a falling DPO looked "good". |
+| 23 | M4 | Case 2 dummy KPIs are internally consistent (CCC = DSO + DIO − DPO; the Calc sheet ratios match the Input balances on a 30-day basis) | So the sheet, dashboard and text agree if someone checks. |
+| 24 | M4 | Backlog stubs carry one placeholder metric each | The schema requires at least one metric; drafts are never rendered. |
+| 25 | M4 | Case 1 references a generic PO number ("PO 4500-0000") and generic document numbers | Dummy values only; no real document numbers. |
