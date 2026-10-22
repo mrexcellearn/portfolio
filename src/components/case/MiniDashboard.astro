@@ -68,7 +68,7 @@ const arrow = { up: '↑', down: '↓', flat: '→' } as const;
   </div>
   <p class="explain small muted">
     <span class="by-benefit">Colour follows the direction of benefit: a falling DPO is red because paying suppliers faster ties up cash.</span>
-    <span class="by-move">This is the original mistake: up is green and down is red, so a falling DPO looks "good".</span>
+    <span class="by-move">This is the original mistake: every fall is green and every rise is red, so a falling DPO looks "good".</span>
   </p>
 </figure>
 <style>
@@ -80,7 +80,7 @@ const arrow = { up: '↑', down: '↓', flat: '→' } as const;
   .mode input { position: absolute; opacity: 0; pointer-events: none; }
   .mode label:has(input:checked) { background: var(--ink); color: #fff; }
   .mode label:has(input:focus-visible) { outline: 2px solid var(--ink); outline-offset: 2px; }
-  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 12px; }
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr)); gap: 12px; }
   .tile { border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 16px; display: grid; gap: 8px; --c: var(--muted); }
   .head { display: flex; flex-direction: column; }
   .key { font-weight: 500; }
@@ -97,8 +97,8 @@ const arrow = { up: '↑', down: '↓', flat: '→' } as const;
   .tile[data-benefit='bad'] { --c: var(--bad); }
   /* movement mode: the original mistake */
   .dash:has(input[value='movement']:checked) .tile { --c: var(--muted); }
-  .dash:has(input[value='movement']:checked) .tile[data-move='up'] { --c: var(--ok); }
-  .dash:has(input[value='movement']:checked) .tile[data-move='down'] { --c: var(--bad); }
+  .dash:has(input[value='movement']:checked) .tile[data-move='up'] { --c: var(--bad); }
+  .dash:has(input[value='movement']:checked) .tile[data-move='down'] { --c: var(--ok); }
   .dash:has(input[value='movement']:checked) .by-move { display: inline; }
   .dash:has(input[value='movement']:checked) .by-benefit { display: none; }
 </style>
