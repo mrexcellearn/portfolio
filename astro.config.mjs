@@ -11,6 +11,6 @@ export default defineConfig({
   output: 'static',
   integrations: [mdx(), sitemap()],
   markdown: {
-    shikiConfig: { theme: 'github-light' },
+    shikiConfig: { theme: 'github-light-high-contrast' },
   },
 });

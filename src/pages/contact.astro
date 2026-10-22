@@ -1,0 +1,47 @@
+---
+import Base from '../layouts/Base.astro';
+import Button from '../components/ui/Button.astro';
+import Icon from '../components/ui/Icon.astro';
+import { site } from '../config/site.config';
+
+const subject = encodeURIComponent('Process automation enquiry');
+---
+<Base title="Contact" description="Tell me about the process, the tools you use, and where it hurts.">
+  <section class="container page">
+    <h1>Let's talk</h1>
+    <p class="lead muted">I take on freelance work in finance process automation, reporting and process documentation. Email is the fastest way to reach me.</p>
+    <p class="cta">
+      <Button href={`mailto:${site.email}?subject=${subject}`}><Icon name="mail" size={18} /> {site.email}</Button>
+    </p>
+    <div class="grid">
+      <div>
+        <h2>What to include</h2>
+        <ol class="list">
+          <li><strong>The process.</strong> What happens today, step by step, and who does each step.</li>
+          <li><strong>The tools in use.</strong> Excel, SAP, SharePoint, Google Workspace, email, anything else.</li>
+          <li><strong>The pain.</strong> Where time goes, what breaks, and what you'd like to see instead.</li>
+        </ol>
+      </div>
+      <div>
+        <h2>Elsewhere</h2>
+        <ul class="links">
+          <li><a href={site.links.linkedin}>LinkedIn <Icon name="arrow-up-right" size={16} /></a></li>
+          <li><a href={site.links.tiktok}>TikTok @ Mr. Excellearn <Icon name="arrow-up-right" size={16} /></a></li>
+        </ul>
+        <p class="small muted">Based in {site.location}. Local time is shown in the top bar.</p>
+      </div>
+    </div>
+  </section>
+</Base>
+<style>
+  .page { padding-block: 64px 96px; }
+  .lead { font-size: 1.125rem; max-width: 56ch; }
+  .cta { margin: 32px 0 80px; }
+  .grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 64px; border-top: 1px solid var(--line); padding-top: 48px; }
+  h2 { font-size: var(--fs-h3); font-weight: 500; }
+  .list { padding-left: 20px; margin: 0; display: grid; gap: 12px; max-width: 56ch; }
+  .links { list-style: none; margin: 0 0 24px; padding: 0; border-top: 1px solid var(--line); }
+  .links a { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--line); text-decoration: none; }
+  .links a:hover { text-decoration: underline; text-underline-offset: 4px; }
+  @media (max-width: 899px) { .grid { grid-template-columns: 1fr; gap: 48px; } }
+</style>

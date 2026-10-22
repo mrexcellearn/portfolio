@@ -92,8 +92,8 @@ const tone = (s: Status) =>
   .blk { position: relative; }
   .pin {
     position: absolute; top: -9px; right: -9px; z-index: 2; width: 22px; height: 22px; border-radius: 50%;
-    border: 2px solid var(--bg); background: var(--warn); color: #fff; font: 600 11px/1 var(--font-sans);
-    cursor: pointer; display: grid; place-items: center; padding: 0; box-shadow: 0 0 0 1px var(--warn);
+    border: 2px solid var(--bg); background: var(--warn-text); color: #fff; font: 600 11px/1 var(--font-sans);
+    cursor: pointer; display: grid; place-items: center; padding: 0; box-shadow: 0 0 0 1px var(--warn-text);
   }
   .pin:hover, .pin[aria-expanded='true'] { background: var(--ink); box-shadow: 0 0 0 1px var(--ink); }
   .hdr { display: flex; align-items: center; gap: 10px; background: var(--ink); color: #fff; padding: 12px 16px; margin: -16px -16px 0; font-size: 0.875rem; }
@@ -124,10 +124,10 @@ const tone = (s: Status) =>
   .g-s, .g-m { color: var(--muted); font-size: 0.75rem; }
   .sb { display: inline-block; font-size: 0.6875rem; font-weight: 500; padding: 2px 8px; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; }
   .sb.neutral { color: var(--muted); }
-  .sb.warn { color: var(--warn); }
+  .sb.warn { color: var(--warn-text); }
   .sb.info { color: var(--ink); }
-  .sb.ok { color: var(--ok); }
-  .sb.okfill { background: var(--ok); border-color: var(--ok); color: #fff; }
+  .sb.ok { color: var(--ok-text); }
+  .sb.okfill { background: var(--ok-text); border-color: var(--ok-text); color: #fff; }
   .sb.bad { color: var(--bad); }
   .form { display: grid; gap: 10px; }
   .form.two { grid-template-columns: 1fr 1fr; }
@@ -138,7 +138,7 @@ const tone = (s: Status) =>
   .check li { display: flex; gap: 8px; align-items: center; color: var(--muted); }
   .check li.done { color: var(--ink); }
   .box { width: 16px; height: 16px; border: 1px solid var(--line); border-radius: 4px; display: grid; place-items: center; font-size: 0.625rem; }
-  .done .box { background: var(--ok); border-color: var(--ok); color: #fff; }
+  .done .box { background: var(--ok-text); border-color: var(--ok-text); color: #fff; }
   .summary dl, .voucher dl { display: grid; grid-template-columns: max-content 1fr; gap: 4px 12px; margin: 0; font-size: 0.8125rem; }
   .summary dt, .voucher dt { color: var(--muted); }
   .summary dd, .voucher dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; }

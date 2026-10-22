@@ -14,7 +14,7 @@ const current = Astro.url.pathname.replace(/\/$/, '');
 ---
 <header class="nav" data-nav>
   <div class="container inner">
-    <a class="logo" href={url('/')} aria-label={`${site.name}, home`}>{site.initials}</a>
+    <a class="logo" href={url('/')}><span aria-hidden="true">{site.initials}</span><span class="sr-only">{site.name}, home</span></a>
     <nav aria-label="Main">
       <button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav-links" data-menu-btn>
         <span class="sr-only">Menu</span>

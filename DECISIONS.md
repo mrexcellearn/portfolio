@@ -29,3 +29,8 @@ Choices made where the PRD was silent or where something had to change. Newest l
 | 23 | M4 | Case 2 dummy KPIs are internally consistent (CCC = DSO + DIO − DPO; the Calc sheet ratios match the Input balances on a 30-day basis) | So the sheet, dashboard and text agree if someone checks. |
 | 24 | M4 | Backlog stubs carry one placeholder metric each | The schema requires at least one metric; drafts are never rendered. |
 | 25 | M4 | Case 1 references a generic PO number ("PO 4500-0000") and generic document numbers | Dummy values only; no real document numbers. |
+| 26 | M5 | OG images generated at build by an Astro endpoint (`src/pages/og/[...slug].png.ts`) with satori + resvg and the Inter WOFF files | No external service; every page and case gets its own 1200x630 card on `--band`. |
+| 27 | M5 | Added `--ok-text` (#1F7A44) and `--warn-text` (#8A5A12) tokens for small status text and white-on-colour pins; the PRD's `--ok`/`--warn` stay for dots and lines | PRD colours fail WCAG AA 4.5:1 for 13px text (3.4:1 and 3.3:1). |
+| 28 | M5 | Shiki theme `github-light-high-contrast` | The default `github-light` orange fails AA contrast. |
+| 29 | M5 | About page story is placeholder copy in Rey's voice, marked `[PLACEHOLDER]` in the source | Rey replaces it with his own words. |
+| 30 | M5 | Analytics flag exists in `site.config.ts` (`analytics.enabled: false`) but no analytics code ships | PRD: off by default; nothing to load until a provider is chosen. |
