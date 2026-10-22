@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://mrexcellearn.github.io/portfolio/sitemap-index.xml

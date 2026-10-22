@@ -1,0 +1,26 @@
+:root {
+  /* color */
+  --bg: #FFFFFF;
+  --band: #F3F4EE;
+  --ink: #111111;
+  --muted: #6B6F6A;
+  --line: #E3E5DF;
+  --card: #FFFFFF;
+  --ok: #2E9E5B;
+  --warn: #B7791F;
+  --bad: #C0392B;
+  /* type */
+  --font-sans: "Inter Variable", "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --fs-display: clamp(2.5rem, 5vw + 1rem, 4.5rem);
+  --fs-h2: clamp(1.5rem, 1.5vw + 1rem, 2rem);
+  --fs-h3: 1.125rem;
+  --fs-body: 1rem;
+  --fs-small: 0.8125rem;
+  /* layout */
+  --maxw: 1120px;
+  --gutter: 24px;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --space: 8px;
+}

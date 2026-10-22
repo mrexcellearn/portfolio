@@ -1,0 +1,2 @@
+# One term per line (case-insensitive). Published case studies containing any of these fail `npm run check`.
+# Rey: add the employer name, company codes, internal layout/variant names, real vendor names.
