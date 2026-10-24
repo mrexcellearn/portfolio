@@ -1,0 +1,150 @@
+---
+title: Payment Request App
+summary: Centralized about 130 manual payment requests a month into one portal, fully digitalized the process and cut manual processing time by up to 70%.
+category: Automation
+date: "2024-06"
+role: Designer, builder and app admin
+tools: [Power Apps, SharePoint, Power Automate, Teams Approvals, Outlook]
+status: published
+illustrative: false
+featured: true
+order: 1
+metrics:
+  - { label: Processing time per request, before: Baseline, after: 70% faster, better: down }
+  - { label: "Ways to submit a request (desk, email, verbal)", before: "3", after: "1", better: down }
+  - { label: Requests with a visible status, before: 0%, after: 100%, better: up }
+  - { label: Payment vouchers signed on paper, before: All, after: None, better: down }
+---
+
+## Business case
+
+Treasury handles about 130 payments a month that fall outside the normal schedule, such as urgent payments, import duty and employee reimbursements. They come from teams across different islands and countries.
+
+Requests arrived <Pain>on paper, by email or verbally</Pain>. Approvals and filing were <Pain>fully paper-based</Pain>, and the <Pain>payment proof was sent by hand</Pain>.
+
+## Pain points
+
+<PainPoints items={[
+  { pain: 'Requesters did not know which documents to attach.', fix: 'Required documents are listed for each request type.' },
+  { pain: 'Payments were missed through lost papers or skipped emails.', fix: 'One front door, so no request is skipped.' },
+  { pain: 'Finance had no priority list.', fix: 'Urgency is set on submit and can be changed case by case.' },
+  { pain: 'Requesters could not see their payment progress.', fix: 'Live status shows where each request is and who has it.' },
+  { pain: 'Vouchers were printed and signed by hand.', fix: 'Digital vouchers, approved in Teams.' },
+  { pain: 'Payment proof was sent to requesters manually.', fix: 'The proof goes to the beneficiary automatically.' },
+  { pain: 'Audit documents were scattered.', fix: 'Every document is stored on its request.' },
+]} />
+
+## Before and after
+
+<BeforeAfter metrics={props.metrics} illustrative={props.illustrative} />
+
+## The flow
+
+Accounts payable checks every request before treasury sees it. A rejection goes back one step with a reason, so <Win>problems are fixed where they started</Win>.
+
+<ProcessSnake
+  title="To-be process"
+  caption="Read left to right, then right to left on the second row."
+  lanes={[
+    { name: 'Requester', color: '#2563EB' },
+    { name: 'Accounts payable', color: '#0F766E' },
+    { name: 'Treasury', color: '#B45309' },
+    { name: 'Finance head and director', color: '#7C3AED' },
+    { name: 'System', color: '#6B6F6A' },
+  ]}
+  steps={[
+    { lane: 'Requester', title: 'Submit the request with the required documents' },
+    { lane: 'System', title: 'Check the fields and documents, queue it by urgency' },
+    { lane: 'Accounts payable', title: 'Review, record and post', branch: 'Reject back to the requester' },
+    { lane: 'Treasury', title: 'Review and prepare the payment voucher', branch: 'Return to accounts payable' },
+    { lane: 'Finance head and director', title: 'Approve in Teams' },
+    { lane: 'Treasury', title: 'Upload the payment to the bank portal' },
+    { lane: 'Finance head and director', title: 'Release the payment in the bank portal' },
+    { lane: 'System', title: 'Mark paid, send and attach the payment proof' },
+  ]}
+/>
+
+## The build
+
+### The app
+
+<ToolPills tools={['Power Apps', 'SharePoint']} />
+
+A canvas app with one home screen for everyone. Requesters create and track their requests. Finance works the queue from the admin screen, where every request carries its documents, its history and the next step. Once paid, the payment proof goes to the beneficiary by email.
+
+<ScreenshotTabs
+  title="Payment request app"
+  caption="Real screens. Names, vendors, amounts, references and the logo are replaced with dummy data."
+  tabs={[
+    { name: 'Home', device: 'laptop', src: '/case-studies/payment-request-app/home.webp', width: 1675, height: 941, benefits: [
+      { title: 'One front door', note: 'Every non-scheduled payment starts here, wherever the requester sits. No more desk drops, emails or verbal asks.' },
+      { title: 'Finance tools in one place', note: 'Finance users also see the admin tools: the full queue, approval upload and batch creation.' },
+      { title: 'Help built in', note: 'The user guide, lead times and policy sit one tap away, with a contact list for the person in charge.' },
+    ]},
+    { name: 'New request', device: 'laptop', src: '/case-studies/payment-request-app/new-request.webp', width: 1673, height: 937, benefits: [
+      { title: 'The right documents, every time', note: 'The required document list changes with the request type, so requesters know what to attach before they submit.' },
+      { title: 'Nothing incomplete gets through', note: 'Validations turn green as each field is filled. Submit stays locked until everything, attachments included, is in.' },
+      { title: 'Priority set at the source', note: 'Urgency is chosen on the request, and urgent ones need a written justification.' },
+    ]},
+    { name: 'Admin queue', device: 'laptop', src: '/case-studies/payment-request-app/admin.webp', width: 1678, height: 949, benefits: [
+      { title: 'One list of everything waiting', note: 'Finance sees every request in one queue instead of a desk pile and an inbox.' },
+      { title: 'Work by priority', note: 'Filter by status, request type and urgency to decide what gets paid first.' },
+      { title: 'Find any request fast', note: 'Search by reference, requester, beneficiary or remarks.' },
+    ]},
+    { name: 'Request detail', device: 'laptop', src: '/case-studies/payment-request-app/detail-actions.webp', width: 1676, height: 948, benefits: [
+      { title: 'Clear next step', note: 'Each role sees its action, plus where the request goes if it is approved or rejected.' },
+      { title: 'Approvers named up front', note: 'The people in charge of the next approval are shown on the request, so nobody has to ask.' },
+      { title: 'Share one link', note: 'Link to this item opens the exact request, for a quick question in Teams or email.' },
+    ]},
+    { name: 'Attachments', device: 'laptop', src: '/case-studies/payment-request-app/detail-attachments.webp', width: 1678, height: 942, benefits: [
+      { title: 'Audit file in one place', note: 'Invoices, the payment voucher, the Teams approval and the payment proof are all stored on the request.' },
+      { title: 'Self-service proof', note: 'Requesters download the payment proof themselves. No email to finance asking for it.' },
+    ]},
+    { name: 'Payment proof', device: 'laptop', src: '/case-studies/payment-request-app/email.webp', width: 1918, height: 1019, benefits: [
+      { title: 'Sent to the beneficiary', note: 'The payment advice goes straight to the beneficiary from one list of employees, vendors and other payees. Nobody forwards it by hand.' },
+      { title: 'A copy stays on the request', note: 'The proof is attached to the request too, so the requester downloads it without asking finance.' },
+    ]},
+  ]}
+/>
+
+### The approval flow
+
+<ToolPills tools={['Power Automate', 'SharePoint', 'Teams Approvals', 'Outlook']} />
+
+When treasury sends a request for approval, the app calls one cloud flow. It gathers the request's documents, sends the approval to the finance head and the director in Teams, and writes the outcome back to the request.
+
+<ScreenshotTabs
+  title="Payment request approval flow"
+  caption="Power Automate cloud flow and the Teams approval card. Names, amounts and references are dummy data."
+  tabs={[
+    { name: 'Send for approval', device: 'laptop', src: '/case-studies/payment-request-app/flow-approval.webp', width: 1692, height: 896, benefits: [
+      { title: 'One tap from treasury', note: 'The app passes the request to the flow. Nobody builds an approval email by hand.' },
+      { title: 'Documents travel with the approval', note: 'The flow collects every attachment on the request and links them in the approval, so approvers decide with the full file.' },
+      { title: 'Approval waits in Teams', note: 'The finance head and the director approve from Teams instead of signing a paper voucher.' },
+    ]},
+    { name: 'Teams approval', device: 'phone', src: '/case-studies/payment-request-app/teams-approval.webp', width: 543, height: 853, benefits: [
+      { title: 'Everything on one card', note: 'Beneficiary, purpose, reference, amount and remarks sit in a summary table, with links to every supporting document.' },
+      { title: 'Approve from anywhere', note: 'The director and the finance head approve on their phone. No paper voucher to sign.' },
+      { title: 'Every step recorded', note: 'Who requested, who approved and when are listed on the card, ready for audit.' },
+    ]},
+    { name: 'Outcome', device: 'laptop', src: '/case-studies/payment-request-app/flow-outcome.webp', width: 1702, height: 893, benefits: [
+      { title: 'Approval on the record', note: 'The approval ID is saved on the request, so the audit trail links straight to it.' },
+      { title: 'Approved or rejected, everyone knows', note: 'The request status updates and an email with a summary table goes out either way.' },
+      { title: 'Summary table built automatically', note: 'Select and Create HTML table turn the request details into the email body. Nobody types it.' },
+    ]},
+  ]}
+/>
+
+## Results
+
+About 130 non-scheduled payments a month now come through <Win>one front door</Win>, and processing time per request is <Win>down 70%</Win>. Because every request is in the queue, <Win>no payment is skipped</Win> because of a lost document or a forgotten message.
+
+Payment vouchers are <Win>fully digital</Win> and approved in Teams. Requesters follow their own payments and download the proof themselves, and every request keeps its documents, approvals and payment proof together, so <Win>the audit file is complete</Win> without a filing cabinet.
+
+## Next improvements
+
+{/* ASSUMPTION: these are suggested improvements. Rey to confirm or replace. */}
+
+- Move the data from SharePoint lists to Dataverse, so search across every request stays fast as the history grows.
+- Add a lead-time view per stage, to show where requests wait longest.
+- Add a phone layout, so requesters on site can submit and track requests without a laptop.
