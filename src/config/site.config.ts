@@ -18,7 +18,7 @@ export const site = {
   avatar: '/rey.jpg', // in public/; the RK initials show when the file is missing
   consult: { label: 'Book a free 30-minute call', short: 'Free consultation' },
   // Free access key from https://web3forms.com (it is safe to publish). Empty = the form opens an email draft instead.
-  contactForm: { web3formsKey: '' },
+  contactForm: { web3formsKey: '7416df13-7867-4e36-b17f-674182f27780' },
   availability: { open: true, text: 'Available for freelance work' },
   analytics: { enabled: false },
 } as const;
