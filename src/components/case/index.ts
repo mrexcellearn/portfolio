@@ -13,3 +13,4 @@ export { default as ToolPills } from './ToolPills.astro';
 export { default as Pain } from './Pain.astro';
 export { default as Win } from './Win.astro';
 export { default as ScreenshotTabs } from './ScreenshotTabs.astro';
+export { default as PainPoints } from './PainPoints.astro';

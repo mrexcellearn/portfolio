@@ -1,6 +1,6 @@
 ---
 title: Expense Claim App
-summary: Moved 60 paper expense claims a month into a Power Apps workflow with Teams approvals and auto-generated PDF reports. No printing, no couriers.
+summary: Moved about 60 paper expense claims a month into one app with Teams approvals, fully digitalized the process and removed printing and couriers.
 category: Automation
 date: "2023-09"
 role: Designer and builder (my first Power App)
@@ -20,11 +20,21 @@ metrics:
 
 ## Business case
 
-About 60 expense claims a month <Pain>ran on paper</Pain>. Employees kept every receipt, taped them to a sheet, <Pain>typed a recap table by hand</Pain>, printed it and walked it to their manager for a signature.
+About 60 expense claims a month from 40 employees <Pain>ran on paper</Pain>. Employees kept every receipt, <Pain>typed a recap table by hand</Pain> and chased a manager's signature, often <Pain>on another island or in another country</Pain>.
 
-Many managers sat <Pain>on another island or in another country</Pain>. Then the claim had to be scanned, emailed and e-signed. Once signed, it went to finance for review and posting, often <Pain>by courier</Pain> because finance was in a different office.
+Signed claims then went to finance <Pain>by courier</Pain> for review and posting. <Pain>Receipts went missing in transit</Pain>, and nobody could see where a claim was.
 
-Every step cost paper, shipping and days. <Pain>Receipts went missing in transit</Pain>, and nobody could see where a claim was without asking.
+## Pain points
+
+<PainPoints items={[
+  { pain: 'Receipts were taped to paper sheets and kept by hand.', fix: 'Each receipt is photographed and attached to its line item.' },
+  { pain: 'Employees typed the recap table by hand.', fix: 'The app totals every line item by category.' },
+  { pain: 'Every claim was printed for a wet signature.', fix: 'Claims are submitted in the app, with no printing.' },
+  { pain: 'Remote managers had to scan, email and e-sign.', fix: 'Accounting checks first, then the manager approves in Teams.' },
+  { pain: 'Signed claims went to finance by courier.', fix: 'Finance gets the claim the moment it is submitted.' },
+  { pain: 'Nobody could see where a claim was.', fix: 'The home screen shows each claim as open, pending or completed.' },
+  { pain: 'Lost receipts left no audit trail.', fix: 'A PDF with all receipts is generated and every approval is logged.' },
+]} />
 
 ## Before and after
 
@@ -61,7 +71,7 @@ Finance now reviews first. Accounting checks the claim before the manager sees i
 
 <ToolPills tools={['Power Apps', 'SharePoint']} />
 
-A canvas app that works on a phone or in a browser. Employees create one report per event and add each expense with a photo of the receipt. Approvals happen in Teams, and the finished report arrives by email.
+A canvas app that works on a phone or in a browser. Employees create one report per event and add each expense with a photo of the receipt. The finished report arrives as a PDF by email.
 
 <ScreenshotTabs
   title="Expense claim app"
@@ -79,11 +89,6 @@ A canvas app that works on a phone or in a browser. Employees create one report 
     { name: 'Line item', device: 'phone', src: '/case-studies/expense-claim-app/line-item.webp', width: 438, height: 780, benefits: [
       { title: 'Snap the receipt', note: 'The phone camera attaches the receipt to each expense, so paper receipts never travel or go missing.' },
       { title: 'Consistent coding', note: 'Category and cost center come from lists, so accounting gets the same values every time.' },
-    ]},
-    { name: 'Teams approval', device: 'laptop', src: '/case-studies/expense-claim-app/teams-approval.webp', width: 548, height: 726, benefits: [
-      { title: 'Approve from anywhere', note: 'Accounting, then the manager, approve in Teams. No scanning, e-signing or couriering for a signature.' },
-      { title: 'One click back to the claim', note: 'The card links straight to the report in the app.' },
-      { title: 'Audit trail built in', note: 'Who approved, and when, is recorded on every claim.' },
     ]},
     { name: 'Generated PDF', device: 'laptop', src: '/case-studies/expense-claim-app/generated-pdf.webp', width: 608, height: 830, benefits: [
       { title: 'The report builds itself', note: 'After the last approval, a PDF with the summary and every receipt is created automatically.' },
@@ -110,6 +115,11 @@ Submitting a report runs one cloud flow. It sends the claim for approval in Team
       { title: 'One tap starts everything', note: 'The app passes the report ID to the flow. The employee does nothing else.' },
       { title: 'Right approver every time', note: 'The flow looks up the branch admin from a list, so claims route correctly without anyone forwarding them.' },
       { title: 'Approval waits in Teams', note: 'The claim summary goes to Teams Approvals and the flow waits for the outcome.' },
+    ]},
+    { name: 'Teams approval', device: 'laptop', src: '/case-studies/expense-claim-app/teams-approval.webp', width: 548, height: 726, benefits: [
+      { title: 'Approve from anywhere', note: 'Accounting, then the manager, approve in Teams. No scanning, e-signing or couriering for a signature.' },
+      { title: 'One click back to the claim', note: 'The card links straight to the report in the app.' },
+      { title: 'Audit trail built in', note: 'Who approved, and when, is recorded on every claim.' },
     ]},
     { name: 'Outcome', device: 'laptop', src: '/case-studies/expense-claim-app/flow-outcome.webp', width: 1401, height: 851, benefits: [
       { title: 'Approved: closed and sent', note: 'Status moves to Completed, the receipts and items are gathered, and the summary email with the PDF goes out.' },
