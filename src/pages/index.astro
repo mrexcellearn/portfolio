@@ -20,9 +20,9 @@ import { testimonials } from '../data/testimonials';
 
 const cases = (await publishedCases()).slice(0, 4);
 
-const avatar = url("/rey.jpg");
-const hasAvatar = existsSync('public/rey.jpg');
-const mailto = `mailto:${site.email}`;
+const avatar = url(site.avatar);
+const hasAvatar = existsSync(`public${site.avatar}`);
+const consult = url('/contact#form');
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -48,7 +48,7 @@ const jsonLd = {
       <p class="muted sub">AP &amp; Treasury Supervisor based in Jakarta, Indonesia. I design and ship Power Platform, Excel and Apps Script solutions that replace manual finance work.</p>
       <div class="actions">
         <Button href={url('/case-studies')}>See case studies</Button>
-        <Button href={mailto} variant="secondary">Talk with me</Button>
+        <Button href={consult} variant="secondary">{site.consult.label}</Button>
       </div>
     </div>
   </section>
@@ -144,8 +144,11 @@ const jsonLd = {
 
   <Section id="cta">
     <div class="cta">
-      <p class="cta-text">Still running a process on email and Excel? Let's talk.</p>
-      <Button href={mailto}>Talk with me</Button>
+      <div>
+        <p class="cta-text">Still running a process on email and Excel? Let's talk.</p>
+        <p class="muted cta-sub">Book a free 30-minute call. We map the process together and I tell you what I'd automate first. No obligation.</p>
+      </div>
+      <Button href={consult}>{site.consult.label}</Button>
     </div>
   </Section>
 </Base>
@@ -214,6 +217,7 @@ const jsonLd = {
 
   .cta { display: flex; justify-content: space-between; align-items: center; gap: 32px; flex-wrap: wrap; }
   .cta-text { font-size: var(--fs-h2); font-weight: var(--fw-heading); letter-spacing: -0.01em; margin: 0; max-width: 24ch; line-height: 1.25; }
+  .cta-sub { margin: 12px 0 0; max-width: 52ch; }
 
   @media (max-width: 899px) {
     .hero { grid-template-columns: 1fr; padding-block: 64px; gap: 32px; }

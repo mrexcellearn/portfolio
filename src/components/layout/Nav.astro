@@ -1,4 +1,5 @@
 ---
+import { existsSync } from 'node:fs';
 import { site } from '../../config/site.config';
 import { url } from '../../lib/url';
 import AvailabilityChip from './AvailabilityChip.astro';
@@ -10,11 +11,12 @@ const links = [
   { href: url('/about'), label: 'About' },
   { href: url('/contact'), label: 'Contact' },
 ];
+const hasAvatar = existsSync(`public${site.avatar}`);
 const current = Astro.url.pathname.replace(/\/$/, '');
 ---
 <header class="nav" data-nav>
   <div class="container inner">
-    <a class="logo" href={url('/')}><span aria-hidden="true">{site.initials}</span><span class="sr-only">{site.name}, home</span></a>
+    <a class="logo" href={url('/')}>{hasAvatar ? <img src={url(site.avatar)} alt="" width="40" height="40" /> : <span aria-hidden="true">{site.initials}</span>}<span class="sr-only">{site.name}, home</span></a>
     <nav aria-label="Main">
       <button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav-links" data-menu-btn>
         <span class="sr-only">Menu</span>
@@ -56,7 +58,10 @@ const current = Astro.url.pathname.replace(/\/$/, '');
   .logo {
     display: grid; place-items: center; width: 40px; height: 40px; border-radius: 10px;
     background: var(--ink); color: #fff; font-weight: 600; font-size: 0.875rem; text-decoration: none; letter-spacing: 0.02em;
+    overflow: hidden; flex-shrink: 0;
   }
+  .logo img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+  .logo:has(img) { border-radius: 50%; background: var(--band); border: 1px solid var(--line); }
   nav { flex: 1; }
   .links { display: flex; gap: 28px; list-style: none; margin: 0; padding: 0; }
   .links a { text-decoration: none; font-size: 0.9375rem; color: var(--muted); padding: 8px 0; }
