@@ -2,7 +2,7 @@
 import type { CollectionEntry } from 'astro:content';
 import type { MarkdownHeading } from 'astro';
 import Base from './Base.astro';
-import Chip from '../components/ui/Chip.astro';
+import ToolChip from '../components/ui/ToolChip.astro';
 import Badge from '../components/ui/Badge.astro';
 import Button from '../components/ui/Button.astro';
 import Icon from '../components/ui/Icon.astro';
@@ -33,9 +33,9 @@ const month = (s: string) => {
         <div><dt class="muted">Category</dt><dd>{d.category}</dd></div>
         <div><dt class="muted">Date</dt><dd>{month(d.date)}</dd></div>
         <div><dt class="muted">Role</dt><dd>{d.role}</dd></div>
-        <div class="tools"><dt class="muted">Tools</dt><dd>{d.tools.map((t) => <Chip>{t}</Chip>)}</dd></div>
+        <div class="tools"><dt class="muted">Tools</dt><dd>{d.tools.map((t) => <ToolChip name={t} />)}</dd></div>
       </dl>
-      {d.illustrative && <p><Badge>Illustrative example</Badge></p>}
+      <p>{d.illustrative ? <Badge>Illustrative example</Badge> : <Badge tone="ok">Real business case</Badge>}</p>
     </header>
 
     <div class="grid">
@@ -47,10 +47,14 @@ const month = (s: string) => {
       )}
       <div class="prose">
         <slot />
-        {d.illustrative && (
+        {d.illustrative ? (
           <p class="note small muted">
             Illustrative example. The company, vendors, people and amounts on this page are fictional, and the
             numbers show the shape of the result rather than measured data.
+          </p>
+        ) : (
+          <p class="note small muted">
+            Real business case. Names, amounts and screenshots are anonymized and use dummy data.
           </p>
         )}
       </div>

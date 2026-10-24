@@ -1,0 +1,92 @@
+---
+// Compact process map: step cards run left to right, then wrap down and run right to left (a snake).
+// Each card is tagged with its lane (who does it). On phones it becomes one vertical list.
+export interface Lane { name: string; color: string; }
+export interface SnakeStep { title: string; lane: string; branch?: string; }
+interface Props { steps: SnakeStep[]; lanes: Lane[]; title?: string; caption?: string; cols?: number; }
+const { steps, lanes, title, caption, cols = 4 } = Astro.props;
+const color = Object.fromEntries(lanes.map((l) => [l.name, l.color]));
+const rows: { step: SnakeStep; n: number }[][] = [];
+steps.forEach((step, i) => {
+  if (i % cols === 0) rows.push([]);
+  rows[rows.length - 1].push({ step, n: i + 1 });
+});
+---
+<figure class="snake" style={`--cols:${cols}`}>
+  {(title || caption) && (
+    <figcaption>
+      {title && <span class="t">{title}</span>}
+      {caption && <span class="small muted cap">{caption}</span>}
+    </figcaption>
+  )}
+  <ul class="legend small" aria-label="Lanes">
+    {lanes.map((l) => <li style={`--c:${l.color}`}><span class="dot" aria-hidden="true" />{l.name}</li>)}
+  </ul>
+  <ol class="rows">
+    {rows.map((row, r) => (
+      <li class:list={['row', r % 2 ? 'rtl' : 'ltr']}>
+        <ol class="steps">
+          {row.map(({ step, n }) => (
+            <li class="step" style={`--c:${color[step.lane] ?? 'var(--muted)'}`}>
+              <div class="inner">
+                <div class="top"><span class="n">{String(n).padStart(2, '0')}</span><span class="lane">{step.lane}</span></div>
+                <p class="title">{step.title}</p>
+                {step.branch && <p class="branch small">↩ {step.branch}</p>}
+              </div>
+            </li>
+          ))}
+        </ol>
+      </li>
+    ))}
+  </ol>
+</figure>
+<style>
+  .snake { margin: 32px 0; }
+  figcaption { display: flex; flex-direction: column; gap: 2px; margin-bottom: 12px; }
+  .t { font-weight: 500; }
+  .legend { list-style: none; display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 0 0 16px; padding: 0; color: var(--muted); }
+  .legend li { display: inline-flex; align-items: center; gap: 6px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--c); }
+  ol { list-style: none; margin: 0; padding: 0; }
+  .rows { display: grid; gap: 32px; }
+  .steps { display: grid; grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); gap: 24px; }
+  .rtl .steps { direction: rtl; }
+  .step { position: relative; display: flex; }
+  .inner {
+    direction: ltr; flex: 1; display: flex; flex-direction: column; gap: 6px;
+    padding: 12px 14px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg);
+  }
+  .top { display: flex; align-items: center; gap: 8px; font-size: 0.75rem; color: var(--muted); }
+  .n { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+  .lane { display: inline-flex; align-items: center; gap: 6px; }
+  .lane::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--c); }
+  .title { margin: 0; font-size: 0.9375rem; line-height: 1.4; }
+  .branch { margin: 0; color: var(--muted); line-height: 1.4; }
+  /* connectors */
+  .step::after { position: absolute; color: var(--line); font-size: 1rem; line-height: 1; color: var(--muted); }
+  .ltr .step:not(:last-child)::after { content: '→'; top: 50%; inset-inline-end: -19px; transform: translateY(-50%); }
+  .rtl .step:not(:last-child)::after { content: '←'; top: 50%; inset-inline-end: -19px; transform: translateY(-50%); }
+  .row:not(:last-child) .step:last-child::after { content: '↓'; bottom: -25px; left: 50%; transform: translateX(-50%); }
+  /* phones: a compact timeline, one line per step */
+  @media (max-width: 720px) {
+    .cap { display: none; }
+    .legend { margin-bottom: 12px; gap: 6px 14px; }
+    .rows, .steps { gap: 0; }
+    .steps { grid-template-columns: minmax(0, 1fr); }
+    .rtl .steps { direction: ltr; }
+    .step::after { content: none !important; }
+    .inner {
+      border: 0; border-radius: 0; background: none;
+      display: grid; grid-template-columns: 8px 1fr; column-gap: 12px; row-gap: 2px;
+      padding: 0 0 14px; position: relative;
+    }
+    .inner::before { content: ''; position: absolute; left: 3.5px; top: 14px; bottom: 0; width: 1px; background: var(--line); }
+    .row:last-child .step:last-child .inner { padding-bottom: 0; }
+    .row:last-child .step:last-child .inner::before { content: none; }
+    .top { display: contents; }
+    .lane { display: none; }
+    .n { grid-column: 1; grid-row: 1; align-self: start; margin-top: 3px; font-size: 0; width: 8px; height: 8px; border-radius: 50%; background: var(--c); }
+    .title { grid-column: 2; grid-row: 1; font-size: 0.875rem; }
+    .branch { grid-column: 2; font-size: 0.75rem; }
+  }
+</style>

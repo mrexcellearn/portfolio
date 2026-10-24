@@ -12,6 +12,7 @@
   /* text-safe variants (WCAG AA 4.5:1 on --bg and --band) for small text */
   --ok-text: #1F7A44;
   --warn-text: #8A5A12;
+  --bad-text: #A8322A;
   /* type */
   --font-sans: "Inter Variable", "Inter", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;

@@ -1,4 +1,4 @@
-// Illustrative data for Case 1. Fictional company (Acme Mining), vendors and amounts.
+// Illustrative data for Case 1. Fictional vendors and amounts; no company name.
 import type { Screen } from '../../../components/case/apps-types';
 import type { Step } from '../../../components/case/flow-types';
 import type { Sheet } from '../../../components/case/sheet-types';

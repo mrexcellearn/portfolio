@@ -8,3 +8,8 @@ export { default as PowerAutomateFlow } from './PowerAutomateFlow.astro';
 export { default as PowerAppsScreens } from './PowerAppsScreens.astro';
 export { default as ExcelSheet } from './ExcelSheet.astro';
 export { default as MiniDashboard } from './MiniDashboard.astro';
+export { default as ProcessSnake } from './ProcessSnake.astro';
+export { default as ToolPills } from './ToolPills.astro';
+export { default as Pain } from './Pain.astro';
+export { default as Win } from './Win.astro';
+export { default as ScreenshotTabs } from './ScreenshotTabs.astro';
