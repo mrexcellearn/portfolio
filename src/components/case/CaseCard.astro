@@ -7,6 +7,7 @@ import Icon from '../ui/Icon.astro';
 import { url } from '../../lib/url';
 import { caseSlug } from '../../lib/cases';
 import { computeDelta } from '../../lib/metrics';
+import { existsSync } from 'node:fs';
 
 interface Props { entry: CollectionEntry<'caseStudies'>; headingLevel?: 'h2' | 'h3'; }
 const { entry, headingLevel = 'h3' } = Astro.props;
@@ -14,8 +15,14 @@ const d = entry.data;
 const H = headingLevel;
 const top = d.metrics[0];
 const delta = computeDelta(top);
+// Thumbnail, if the case has one: a light card.webp first, else the 16:9 PNG.
+const slug = caseSlug(entry);
+const thumb = [`${slug}-card.webp`, `${slug}-16x9.png`]
+  .map((f) => `/case-studies/${slug}/thumbnails/${f}`)
+  .find((f) => existsSync(`public${f}`));
 ---
-<Card href={url(`/case-studies/${caseSlug(entry)}`)} class="case-card">
+<Card href={url(`/case-studies/${slug}`)} class="case-card">
+  {thumb && <img class="thumb" src={url(thumb)} alt="" width="1920" height="1080" loading="lazy" decoding="async" />}
   <div class="meta small muted"><Chip>{d.category}</Chip><span>{d.date}</span>{d.illustrative ? <Badge>Illustrative</Badge> : <Badge tone="ok">Real case</Badge>}</div>
   <H class="title">{d.title}</H>
   <p class="muted">{d.summary}</p>
@@ -23,6 +30,7 @@ const delta = computeDelta(top);
   <span class="view small">View case study <Icon name="arrow" size={16} /></span>
 </Card>
 <style>
+  .thumb { display: block; width: calc(100% + 48px); max-width: none; height: auto; aspect-ratio: 16 / 9; object-fit: cover; margin: -24px -24px 4px; border-bottom: 1px solid var(--line); border-radius: var(--radius) var(--radius) 0 0; }
   .meta { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
   .title { font-size: 1.375rem; font-weight: var(--fw-heading); margin: 8px 0 0; }
   p { margin: 0; }
