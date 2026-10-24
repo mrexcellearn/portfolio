@@ -1,12 +1,10 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import Card from '../ui/Card.astro';
-import Chip from '../ui/Chip.astro';
 import Badge from '../ui/Badge.astro';
 import Icon from '../ui/Icon.astro';
 import { url } from '../../lib/url';
 import { caseSlug } from '../../lib/cases';
-import { computeDelta } from '../../lib/metrics';
 import { existsSync } from 'node:fs';
 
 interface Props { entry: CollectionEntry<'caseStudies'>; headingLevel?: 'h2' | 'h3'; }
@@ -14,40 +12,39 @@ const { entry, headingLevel = 'h3' } = Astro.props;
 const d = entry.data;
 const H = headingLevel;
 const top = d.metrics[0];
-const delta = computeDelta(top);
-// Card background, if the case has one: the thumbnail's devices without its text.
+// Cover image for the card, if the case has one (devices only, no text).
 const slug = caseSlug(entry);
-const bg = `/case-studies/${slug}/thumbnails/${slug}-card.webp`;
-const thumb = existsSync(`public${bg}`) ? bg : undefined;
+const cover = `/case-studies/${slug}/thumbnails/${slug}-card.webp`;
+const thumb = existsSync(`public${cover}`) ? cover : undefined;
 ---
-<Card href={url(`/case-studies/${slug}`)} class={thumb ? 'case-card has-thumb' : 'case-card'}>
-  {thumb && <img class="thumb" src={url(thumb)} alt="" width="1920" height="1080" loading="lazy" decoding="async" />}
-  {thumb && <span class="veil" aria-hidden="true" />}
-  <div class="meta small muted"><Chip>{d.category}</Chip><span>{d.date}</span>{d.illustrative ? <Badge>Illustrative</Badge> : <Badge tone="ok">Real case</Badge>}</div>
-  <H class="title">{d.title}</H>
-  <p class="muted">{d.summary}</p>
-  <p class="outcome small">{top.label}: {top.before} → <strong>{top.after}</strong> <span class:list={['v', delta.verdict]}>({delta.text})</span></p>
-  <span class="view small">View case study <Icon name="arrow" size={16} /></span>
+<Card href={url(`/case-studies/${slug}`)} class="case-card">
+  <div class="media" aria-hidden="true">
+    {thumb ? <img src={url(thumb)} alt="" width="960" height="600" loading="lazy" decoding="async" /> : (
+      <div class="stat"><span class="small muted">{top.label}</span><b>{top.before} → {top.after}</b></div>
+    )}
+  </div>
+  <div class="body">
+    <H class="title">{d.title}</H>
+    <p class="meta small"><span>{d.category}</span>{d.illustrative ? <Badge>Illustrative</Badge> : <Badge tone="ok">Real case</Badge>}</p>
+    <p class="date small muted">{d.date}</p>
+    <p class="sum small muted">{d.summary}</p>
+    <span class="view small">View case study <Icon name="arrow" size={16} /></span>
+  </div>
 </Card>
 <style>
-  /* Thumbnail as background: sharp on the right, frosted behind the text on the left. */
-  :global(.case-card.has-thumb) { position: relative; overflow: hidden; isolation: isolate; }
-  .thumb { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; object-position: right center; }
-  .veil { position: absolute; inset: 0 auto 0 0; z-index: -1; width: 66%; background: color-mix(in srgb, var(--card) 82%, transparent);
-    backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
-    mask-image: linear-gradient(90deg, #000 88%, transparent); -webkit-mask-image: linear-gradient(90deg, #000 88%, transparent); }
-  :global(.case-card.has-thumb) > :not(.thumb, .veil) { max-width: 58%; }
-  @media (max-width: 560px) {
-    .veil { width: 100%; mask-image: none; -webkit-mask-image: none; background: color-mix(in srgb, var(--card) 92%, transparent); }
-    :global(.case-card.has-thumb) > :not(.thumb, .veil) { max-width: none; }
-  }
-  .meta { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-  .title { font-size: 1.375rem; font-weight: var(--fw-heading); margin: 8px 0 0; }
+  /* "Selected works" style: cover image on top, compact text below. */
+  :global(.card.case-card) { padding: 8px; gap: 0; }
+  .media { aspect-ratio: 16 / 10; border-radius: var(--radius-sm); overflow: hidden; background: var(--band); border: 1px solid var(--line); }
+  .media img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 300ms ease; }
+  :global(.case-card:hover) .media img { transform: scale(1.02); }
+  .stat { height: 100%; display: flex; flex-direction: column; justify-content: center; gap: 6px; padding: 24px; }
+  .stat b { font-size: 1.75rem; font-weight: var(--fw-heading); letter-spacing: -0.02em; }
+  .body { display: flex; flex-direction: column; gap: 4px; padding: 16px 8px 8px; flex: 1; }
+  .title { font-size: 1.125rem; font-weight: var(--fw-heading); margin: 0; }
   p { margin: 0; }
-  .outcome { padding-top: 12px; border-top: 1px solid var(--line); }
-  .outcome strong { font-weight: 500; }
-  .v.good { color: var(--ok-text); } .v.bad { color: var(--bad); } .v.flat, .v.qualitative { color: var(--muted); }
-  .view { display: inline-flex; gap: 6px; align-items: center; margin-top: auto; opacity: 0; transition: opacity 150ms ease; }
+  .meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .sum { margin-top: 8px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .view { display: inline-flex; gap: 6px; align-items: center; margin-top: 12px; align-self: flex-start; padding: 6px 12px; border-radius: 999px; background: var(--ink); color: var(--card); opacity: 0; transition: opacity 150ms ease; }
   :global(.case-card:hover) .view, :global(.case-card:focus-visible) .view { opacity: 1; }
   @media (hover: none) { .view { opacity: 1; } }
 </style>
