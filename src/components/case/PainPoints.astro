@@ -1,0 +1,48 @@
+---
+// Numbered pain points, each paired with how the build fixes it. Plain table; stacks on phones.
+export interface PainFix { pain: string; fix: string; }
+interface Props { items: PainFix[]; }
+const { items } = Astro.props;
+---
+<div class="pp">
+  <table>
+    <caption class="sr-only">Pain points and how the app fixes them</caption>
+    <thead>
+      <tr>
+        <th scope="col" class="n"><span class="sr-only">Number</span></th>
+        <th scope="col"><span class="dot bad" aria-hidden="true" />Pain point</th>
+        <th scope="col"><span class="dot good" aria-hidden="true" />How the app fixes it</th>
+      </tr>
+    </thead>
+    <tbody>
+      {items.map((it, i) => (
+        <tr>
+          <td class="n">{i + 1}</td>
+          <th scope="row" data-label="Pain point">{it.pain}</th>
+          <td data-label="Fix">{it.fix}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+<style>
+  .pp { margin-block: 32px; }
+  table { width: 100%; border-collapse: collapse; }
+  thead th { text-align: left; font-weight: 400; font-size: var(--fs-small); color: var(--muted); padding: 0 12px 12px 0; border-bottom: 1px solid var(--line); }
+  tbody th, tbody td { padding: 16px 16px 16px 0; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+  tbody th { font-weight: 400; color: var(--muted); width: 44%; }
+  tbody td:last-child { color: var(--ink); padding-right: 0; }
+  .n { width: 32px; color: var(--muted); font-variant-numeric: tabular-nums; font-size: var(--fs-small); padding-top: 18px; }
+  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 8px; vertical-align: 1px; }
+  .dot.bad { background: var(--bad-text, #B42318); }
+  .dot.good { background: var(--ok-text, #067647); }
+  @media (max-width: 640px) {
+    thead { display: none; }
+    tr { display: grid; grid-template-columns: 32px 1fr; padding: 16px 0; border-bottom: 1px solid var(--line); }
+    tbody th, tbody td { border: 0; padding: 0; width: auto; }
+    .n { grid-row: span 2; padding-top: 2px; }
+    tbody th { margin-bottom: 8px; }
+    tbody th::before, tbody td:last-child::before { content: attr(data-label); display: block; font-size: var(--fs-small); color: var(--muted); margin-bottom: 2px; }
+    tbody td:last-child::before { content: 'Fix'; }
+  }
+</style>
