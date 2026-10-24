@@ -32,3 +32,7 @@ img { max-width: 100%; height: auto; display: block; }
 }
 .js-reveal .reveal { opacity: 0; transform: translateY(8px); transition: opacity 250ms ease, transform 250ms ease; }
 .js-reveal .reveal.in { opacity: 1; transform: none; }
+/* Impact emphasis in case studies only: <Pain> in red, <Win> in green. */
+.pain, .win { font-weight: 500; padding: 0 0.2em; margin: 0 -0.1em; border-radius: 4px; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+.pain { color: var(--bad-text); background: color-mix(in srgb, var(--bad) 9%, transparent); }
+.win { color: var(--ok-text); background: color-mix(in srgb, var(--ok) 11%, transparent); }

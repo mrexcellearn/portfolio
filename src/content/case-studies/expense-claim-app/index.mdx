@@ -1,0 +1,132 @@
+---
+title: Expense Claim App
+summary: Moved 60 paper expense claims a month into a Power Apps workflow with Teams approvals and auto-generated PDF reports. No printing, no couriers.
+category: Automation
+date: "2023-09"
+role: Designer and builder (my first Power App)
+tools: [Power Apps, SharePoint, Power Automate, Teams Approvals, Outlook]
+status: published
+illustrative: false
+featured: false
+order: 3
+metrics:
+  - { label: Paper claims filed per month, before: "60", after: "0", better: down }
+  - { label: Days from submit to approved claim, before: "7", after: "2", better: down }
+  - { label: Printing and courier per claim, before: Required, after: None, better: down }
+  - { label: Claims with a digital audit trail, before: 0%, after: 100%, better: up }
+---
+
+{/* ASSUMPTION: the 7-day and 2-day approval times are estimates. Rey to confirm or replace. */}
+
+## Business case
+
+About 60 expense claims a month <Pain>ran on paper</Pain>. Employees kept every receipt, taped them to a sheet, <Pain>typed a recap table by hand</Pain>, printed it and walked it to their manager for a signature.
+
+Many managers sat <Pain>on another island or in another country</Pain>. Then the claim had to be scanned, emailed and e-signed. Once signed, it went to finance for review and posting, often <Pain>by courier</Pain> because finance was in a different office.
+
+Every step cost paper, shipping and days. <Pain>Receipts went missing in transit</Pain>, and nobody could see where a claim was without asking.
+
+## Before and after
+
+<BeforeAfter metrics={props.metrics} illustrative={props.illustrative} />
+
+## The flow
+
+Finance now reviews first. Accounting checks the claim before the manager sees it, so <Win>managers only approve claims that are already clean</Win>.
+
+<ProcessSnake
+  title="To-be process"
+  caption="Read left to right, then right to left on the second row."
+  lanes={[
+    { name: 'Employee', color: '#2563EB' },
+    { name: 'Accounting', color: '#0F766E' },
+    { name: 'Manager', color: '#7C3AED' },
+    { name: 'System', color: '#6B6F6A' },
+  ]}
+  steps={[
+    { lane: 'Employee', title: 'Create a report for the event' },
+    { lane: 'Employee', title: 'Add each expense with a receipt photo' },
+    { lane: 'Employee', title: 'Submit from phone or web' },
+    { lane: 'System', title: 'Send the claim to accounting in Teams' },
+    { lane: 'Accounting', title: 'Review the claim', branch: 'Return to employee with comments' },
+    { lane: 'Manager', title: 'Approve in Teams, from anywhere', branch: 'Reject with comments' },
+    { lane: 'System', title: 'Build PDF with summary and receipts' },
+    { lane: 'System', title: 'Email PDF to employee and accounting' },
+  ]}
+/>
+
+## The build
+
+### The app
+
+<ToolPills tools={['Power Apps', 'SharePoint']} />
+
+A canvas app that works on a phone or in a browser. Employees create one report per event and add each expense with a photo of the receipt. Approvals happen in Teams, and the finished report arrives by email.
+
+<ScreenshotTabs
+  title="Expense claim app"
+  caption="Real screens. Names, codes, amounts and receipts are replaced with dummy data."
+  tabs={[
+    { name: 'My claims', device: 'phone', src: '/case-studies/expense-claim-app/home.webp', width: 433, height: 776, benefits: [
+      { title: 'Every claim at a glance', note: 'Open, pending and completed totals sit on the home screen. Employees stop asking finance where their money is.' },
+      { title: 'Any past claim in one tap', note: 'Filters by status replace the paper file. Every claim stays searchable.' },
+    ]},
+    { name: 'Report', device: 'phone', src: '/case-studies/expense-claim-app/report.webp', width: 439, height: 775, benefits: [
+      { title: 'One report per event', note: 'All expenses for an event sit under one report with a running total. No recap table typed by hand.' },
+      { title: 'Approver and cost center up front', note: 'They are chosen once on the report, so routing and coding are never missing.' },
+      { title: 'Comments on the record', note: 'Questions about a claim stay with the claim, not in a separate email thread.' },
+    ]},
+    { name: 'Line item', device: 'phone', src: '/case-studies/expense-claim-app/line-item.webp', width: 438, height: 780, benefits: [
+      { title: 'Snap the receipt', note: 'The phone camera attaches the receipt to each expense, so paper receipts never travel or go missing.' },
+      { title: 'Consistent coding', note: 'Category and cost center come from lists, so accounting gets the same values every time.' },
+    ]},
+    { name: 'Teams approval', device: 'laptop', src: '/case-studies/expense-claim-app/teams-approval.webp', width: 548, height: 726, benefits: [
+      { title: 'Approve from anywhere', note: 'Accounting, then the manager, approve in Teams. No scanning, e-signing or couriering for a signature.' },
+      { title: 'One click back to the claim', note: 'The card links straight to the report in the app.' },
+      { title: 'Audit trail built in', note: 'Who approved, and when, is recorded on every claim.' },
+    ]},
+    { name: 'Generated PDF', device: 'laptop', src: '/case-studies/expense-claim-app/generated-pdf.webp', width: 608, height: 830, benefits: [
+      { title: 'The report builds itself', note: 'After the last approval, a PDF with the summary and every receipt is created automatically.' },
+      { title: 'Ready for posting and audit', note: 'Accounting posts from one complete document instead of a stapled paper pack.' },
+    ]},
+    { name: 'Email', device: 'laptop', src: '/case-studies/expense-claim-app/email.webp', width: 1031, height: 742, benefits: [
+      { title: 'Everyone gets the same summary', note: 'The employee and accounting receive the PDF with a summary table in the email body.' },
+      { title: 'Nothing to file by hand', note: 'The email and PDF are the record, so there is no filing cabinet to maintain.' },
+    ]},
+  ]}
+/>
+
+### The approval flow
+
+<ToolPills tools={['Power Automate', 'SharePoint', 'Teams Approvals', 'Outlook']} />
+
+Submitting a report runs one cloud flow. It sends the claim for approval in Teams, and a return or rejection goes back to the employee. The final approval builds the PDF and sends the email.
+
+<ScreenshotTabs
+  title="Submit expense report flow"
+  caption="Power Automate cloud flow, called from the app."
+  tabs={[
+    { name: 'Submit and approve', device: 'laptop', src: '/case-studies/expense-claim-app/flow-approval.webp', width: 1640, height: 856, benefits: [
+      { title: 'One tap starts everything', note: 'The app passes the report ID to the flow. The employee does nothing else.' },
+      { title: 'Right approver every time', note: 'The flow looks up the branch admin from a list, so claims route correctly without anyone forwarding them.' },
+      { title: 'Approval waits in Teams', note: 'The claim summary goes to Teams Approvals and the flow waits for the outcome.' },
+    ]},
+    { name: 'Outcome', device: 'laptop', src: '/case-studies/expense-claim-app/flow-outcome.webp', width: 1401, height: 851, benefits: [
+      { title: 'Approved: closed and sent', note: 'Status moves to Completed, the receipts and items are gathered, and the summary email with the PDF goes out.' },
+      { title: 'Rejected: back to the employee', note: 'Status returns to Open so the employee can fix the claim and resubmit.' },
+      { title: 'Summary table built automatically', note: 'Select and Create HTML table turn the line items into the table in the email. Nobody types it.' },
+    ]},
+  ]}
+/>
+
+## Results
+
+Claims are now <Win>fully digital</Win>. There are <Win>no printed recaps, no scanned signatures and no courier bills</Win>. Approvals happen in Teams, wherever the manager is, and finance reviews first, so problems are caught before a manager spends time on them.
+
+About 40 employees submit their claims in the app. Every claim keeps its receipts, comments and approval history in one place, so <Win>the audit trail is complete</Win> without a filing cabinet.
+
+## Next improvements
+
+- Store the approval chain in a table instead of inside the flow, so a new approver doesn't need a flow change.
+- Use AI Builder receipt processing to read the amount and date from the photo, instead of typing them.
+- Add indexed columns from day one, because the lists grow every month.

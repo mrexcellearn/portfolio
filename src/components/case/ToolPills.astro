@@ -1,0 +1,10 @@
+---
+// Row of tool pills inside case prose: <ToolPills tools={['Power Apps', 'SharePoint']} />
+import ToolChip from '../ui/ToolChip.astro';
+interface Props { tools: string[]; }
+const { tools } = Astro.props;
+---
+<div class="pills">{tools.map((t) => <ToolChip name={t} />)}</div>
+<style>
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 20px; }
+</style>

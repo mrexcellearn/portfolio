@@ -16,7 +16,7 @@ const top = d.metrics[0];
 const delta = computeDelta(top);
 ---
 <Card href={url(`/case-studies/${caseSlug(entry)}`)} class="case-card">
-  <div class="meta small muted"><Chip>{d.category}</Chip><span>{d.date}</span>{d.illustrative && <Badge>Illustrative</Badge>}</div>
+  <div class="meta small muted"><Chip>{d.category}</Chip><span>{d.date}</span>{d.illustrative ? <Badge>Illustrative</Badge> : <Badge tone="ok">Real case</Badge>}</div>
   <H class="title">{d.title}</H>
   <p class="muted">{d.summary}</p>
   <p class="outcome small">{top.label}: {top.before} → <strong>{top.after}</strong> <span class:list={['v', delta.verdict]}>({delta.text})</span></p>
